@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="styles.css">
+    <title>Hey</title>
+    
+</head>
+<body>
+    <div class="welcome" id="welcome">
+    <h1 >Welcome</h1>
+    </div>  
+    <!--Navbar Start-->
+        <ul id="navbar">
+            <li id="transition-for-info">
+                <p id="home"><a href="#welcome" >Home</a></p>
+                <p id="news"><a href="#header-center" >News</a></p>
+                <p id="inform"><a href="#last-section">Contact</a></p>
+            </li>
+        </ul>
+    <!--End of Navbar-->
+
+
+    <section id="main">
+        <div class="header-center">
+            <h3>
+                About Me
+            </h3>
+        </div>
+        <!--Start of Boxes Section-->
+        <section id="boxes">
+            <div id="box-1">
+                <img id="box-1-img" src="content/programmer.jpeg" alt="">
+                <div class="box-1-back">
+                    <div class="box-text">
+                        <h2 id="box-name">My Name is Ege</h2>
+                        <p><i>I'm a Software Engineer</i></p>
+                        <p><i>and Red Team Rookie</i></p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="box-2">
+                <img id="box-2-img" src="content/astronaut.jpeg" alt="">
+                <div class="box-2-back">
+                    <div class="box-text">
+                        <h2><a href=""><i class="fa-solid fa-book"></i></a></h2>
+                        <p><i>People and Books that</i></p>
+                        <p><i>I've been Inspired with</i></p>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div id="box-3">
+                <img id="box-2-img" src="content/download.jpeg" alt="">
+                <div class="box-3-back">
+                    <div class="box-text">
+                        <h2 id="box-name-3"><i><a href="https://github.com/Ege-Sumer/Code-Tries" target="_blank">Projects</a></i></h2>
+                        <p ><i>Coming Soon</i></p>
+                    </div>
+                </div>
+            </div>
+            
+        </section>
+        
+        <!--End of Boxes Section-->
+
+        <!--Start of Section 2-->
+        <div class="header-center" id="header-center">
+            <h3>In Progress</h3>
+        </div>
+        <section id="section-1">
+            
+            <div class="video-container">
+                <video id="myVideo" autoplay muted loop>
+                    <source src="content/video.mp4" type="video/mp4">
+                </video>
+            </div>
+            
+        </section>
+
+        <!--End of Section 2-->
+
+        <div class="header-center">
+            <h3>contact with me</h3>
+        </div>
+
+        <!--Start of Last Section (Form & Logos)-->
+        <section class="last-section" id="last-section">
+            <hr class="form-logo-divider">
+            <div class="form">
+                <form action="">
+                    <label for="email"><input id="email" type="email" placeholder="E-Mail" autocomplete="off" required></label>
+                    <label for="name"><input id="name" type="text" placeholder="Your Name" autocomplete="off" required></label>
+                    <label for="write-box"><textarea name="text" id="write-box" placeholder="Inform me" rows="5px" required></textarea></label>
+                    <input type="submit" id="submit" value="Submit" class="submit-button">
+                </form>
+            </div>
+            
+            <ul id="logos">
+                <li><a href="https://www.linkedin.com/in/ahmet-ege-s%C3%BCmer-9156b7222/" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a></li>
+                <li><a href="https://www.instagram.com/pixrei.xyz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank"><i class="fab fa-instagram"></i></a></li>
+                <li><a href="https://github.com/Ege-Sumer" target="_blank"><i class="fab fa-github"></i></i></a></li>
+            </ul>
+        </section>
+        <!--End of Last Section (Form & Logos)-->
+    </section>
+</body>
+</html>
