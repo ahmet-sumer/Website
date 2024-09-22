@@ -576,5 +576,8 @@ input:focus, textarea:focus{
         margin-top: 20%;
     }
     
-    
+}
+.force-light-mode {
+    background-color: white;
+    color: black;
 }
