@@ -578,7 +578,7 @@ input:focus, textarea:focus{
     
     
 }
-@media (prefers-color-shceme: dark) {
+@media (prefers-color-scheme: dark) {
     body{
         background-color: #111;
         
