@@ -513,12 +513,12 @@ input:focus, textarea:focus{
     top: 50%;
     width: 20%;
 }
-@media (max-width: 1000px) {
+@media only screen and (max-width: 1000px) {
     #boxes{
         display: grid;
     }
 }
-@media (max-width: 900px) {
+@media only screen and (max-width: 900px) {
     
     form{
         max-width: 400px;
@@ -535,10 +535,46 @@ input:focus, textarea:focus{
         margin-left: 0;
     }
 }
-@media (max-width: 600px) {
+@media only screen and (max-width: 600px) {
     #last-section hr{
         width: 50%;
         left: 10%;
     }
+    
+}
+
+@media only screen and (max-width: 400px){
+    .welcome h1{
+        animation: typing 2.5s steps(60, end);
+    }
+    #home, #news, #inform{
+
+    }
+    #home a, #news a, #inform a{    
+        padding-right: 20px;
+        padding-left: 20px;
+    }
+    
+    form{
+        max-width: 300px;
+        margin-top: 40px;
+    }
+    form #email, #name, #write-box, #submit{
+        display: flex;
+        width: 140px;
+        
+    }
+    #last-section hr{
+        width: 60%;
+        left: 10%;
+    }
+    #submit{
+      max-width: 120px;
+      margin-left: 10%;
+    }
+    #logos{
+        margin-top: 20%;
+    }
+    
     
 }
