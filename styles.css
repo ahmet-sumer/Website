@@ -1,5 +1,5 @@
 :root {
-     color-scheme: light only;
+     color-scheme: only light;
 }
 * {
     box-sizing: border-box;
@@ -675,4 +675,7 @@ input:focus, textarea:focus{
     .form-logo-divider{
         border-top: 3px solid #111;
     }
+     html, body{
+          color-scheme: only light;
+     }
 }
