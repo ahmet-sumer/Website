@@ -456,6 +456,7 @@ video {
 
 .submit-button:hover{
     background-color: #222 ;
+     color: snow;
 }
 input:focus, textarea:focus{
     outline: none;
