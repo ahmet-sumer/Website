@@ -1,0 +1,128 @@
+/* Blog Search Styles */
+.blog-search-container {
+    display: flex;
+    max-width: 400px;
+    margin: 30px auto 0;
+}
+
+.blog-search-input {
+    flex: 1;
+    padding: 10px 20px;
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 25px 0 0 25px;
+    color: #fff;
+    font-size: 0.95rem;
+}
+
+.blog-search-input:focus {
+    outline: none;
+    border-color: #00ff88;
+}
+
+.blog-search-btn {
+    padding: 10px 20px;
+    background-color: #00ff88;
+    border: none;
+    border-radius: 0 25px 25px 0;
+    color: #000;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.blog-search-btn:hover {
+    background-color: #00cc6a;
+}
+
+/* Category Filter Styles */
+.blog-category-filter {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.category-filter-btn {
+    padding: 8px 20px;
+    background-color: transparent;
+    border: 1px solid #333;
+    border-radius: 20px;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.category-filter-btn:hover {
+    border-color: #00ff88;
+    color: #00ff88;
+}
+
+.category-filter-btn.active {
+    background-color: #00ff88;
+    border-color: #00ff88;
+    color: #000;
+}
+
+/* No Results Message */
+.no-search-results {
+    text-align: center;
+    color: #888;
+    padding: 40px;
+    font-size: 1.1rem;
+}
+
+/* Search Match Animation */
+.search-match {
+    animation: highlightMatch 0.5s ease;
+}
+
+@keyframes highlightMatch {
+    0% {
+        background-color: rgba(0, 255, 136, 0.2);
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+
+/* Blog Section Navigation Menu'ye Ekleme */
+/* Ana sitenizin navigation'ına blog linki ekleyin */
+.nav-blog-link {
+    color: #00ff88 !important;
+    font-weight: 600;
+}
+
+.nav-blog-link::after {
+    content: "NEW";
+    margin-left: 5px;
+    font-size: 0.7rem;
+    background-color: #ff6b6b;
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 10px;
+    vertical-align: super;
+}
+
+/* Navigation Fix - Mevcut ul stilini değiştirin */
+.main-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: rgba(17, 17, 17, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+.main-navbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* blog-section.css linkini kaldırdığınız için gerek yok */
