@@ -1219,7 +1219,7 @@ textarea:focus-visible {
     will-change: transform;
 }
 
-/* Final Touches */
+
 .post-content a {
     color: var(--primary-color);
     text-decoration: none;
@@ -1270,8 +1270,7 @@ textarea:focus-visible {
 }
 
 
-/* End of CSS File */
-/* Line Numbers for Code Blocks */
+
 .post-content pre {
     position: relative;
     padding-left: 3.5em !important;
@@ -1300,7 +1299,7 @@ textarea:focus-visible {
 }
 
 
-/* Code Block Container */
+
 .code-block-wrapper {
     position: relative;
     margin: 25px 0;
@@ -1315,7 +1314,7 @@ textarea:focus-visible {
     margin: 0;
     padding: 0 !important;
 }
-/* Pre element düzenlemesi */
+
 .post-content pre {
     position: relative;
     display: flex;
@@ -1401,12 +1400,12 @@ textarea:focus-visible {
     z-index: 5;
 }
 
-/* Remove Prism's default line numbers if any */
+
 .post-content pre .line-numbers-rows {
     display: none;
 }
 
-/* Inline code style */
+
 .post-content :not(pre) > code {
     background-color: rgba(0, 255, 136, 0.1);
     color: var(--primary-color);
