@@ -623,9 +623,9 @@ input:focus, textarea:focus{
 }
 
 /* Color themes for each box */
-#box-1 { --border-color: #3498db; --overlay-color: rgba(52, 152, 219, 0.9); }
-#box-2 { --border-color: #e74c3c; --overlay-color: rgba(231, 76, 60, 0.9); }
-#box-3 { --border-color: #f39c12; --overlay-color: rgba(243, 156, 18, 0.9); }
+#box-1 { --border-color: #3498db; --overlay-color: rgba(52, 152, 219, 0.408); }
+#box-2 { --border-color: #d37267; --overlay-color: rgba(238, 141, 131, 0.297); }
+#box-3 { --border-color: #f39c12; --overlay-color: rgba(114, 72, 4, 0.181); }
 
 /* Inner container */
 .box-inner {
