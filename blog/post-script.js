@@ -306,34 +306,30 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Blog kartlarını filtreleme fonksiyonu
+// filterBlogCards fonksiyonunu bulun ve şununla değiştirin
 function filterBlogCards(category) {
-    const blogCards = document.querySelectorAll('.blog-card');
-    
-    // Eğer 'home' veya 'all' ise tüm kartları göster
+    // Kategoriyi filtrele
     if (category === 'home' || category === 'all') {
-        blogCards.forEach(card => {
-            card.style.display = 'block';
-            card.style.animation = 'fadeIn 0.5s ease';
-        });
-        return;
+        filteredPosts = [...allPosts];
+    } else {
+        filteredPosts = allPosts.filter(post => post.category === category);
     }
     
-    // Diğer kategoriler için filtrele
-    blogCards.forEach(card => {
-        const cardCategory = card.getAttribute('data-category');
-        
-        if (cardCategory === category) {
-            card.style.display = 'block';
-            card.style.animation = 'fadeIn 0.5s ease';
-        } else {
-            card.style.display = 'none';
-        }
-    });
+    // İlk sayfaya dön
+    currentPage = 1;
     
-    // Eğer hiç kart yoksa bilgi mesajı göster
-    const visibleCards = document.querySelectorAll(`.blog-card[data-category="${category}"]:not([style*="display: none"])`);
-    if (visibleCards.length === 0) {
-        showNoResultsMessage(category);
+    // Sonuçları göster
+    if (filteredPosts.length === 0) {
+        document.getElementById('blogPosts').innerHTML = `
+            <div class="no-results">
+                <i class="fas fa-search"></i>
+                <p>${category} kategorisinde yazı bulunmuyor.</p>
+            </div>
+        `;
+        document.querySelector('.pagination').style.display = 'none';
+    } else {
+        document.querySelector('.pagination').style.display = 'flex';
+        showPage(1);
     }
 }
 
@@ -354,4 +350,52 @@ function showNoResultsMessage(category) {
         <p>${category} kategorisinde henüz yazı bulunmuyor.</p>
     `;
     container.appendChild(message);
+}
+
+
+
+// Sonsuz kaydırma sistemi
+let isLoading = false;
+let currentLoadedPosts = 4;
+
+function initInfiniteScroll() {
+    window.addEventListener('scroll', () => {
+        if (isLoading) return;
+        
+        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+        
+        // Sayfanın sonuna yaklaştıysak
+        if (scrollTop + clientHeight >= scrollHeight - 100) {
+            loadMorePosts();
+        }
+    });
+}
+
+function loadMorePosts() {
+    isLoading = true;
+    
+    // Loading göster
+    const loader = document.createElement('div');
+    loader.className = 'post-loader';
+    loader.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yükleniyor...';
+    document.getElementById('blogPosts').appendChild(loader);
+    
+    // 1 saniye sonra yeni postları yükle
+    setTimeout(() => {
+        const newPosts = allBlogPosts.slice(currentLoadedPosts, currentLoadedPosts + 4);
+        
+        newPosts.forEach(post => {
+            const postHTML = createPostHTML(post);
+            document.getElementById('blogPosts').insertAdjacentHTML('beforeend', postHTML);
+        });
+        
+        currentLoadedPosts += 4;
+        loader.remove();
+        isLoading = false;
+        
+        // Tüm postlar yüklendiyse
+        if (currentLoadedPosts >= allBlogPosts.length) {
+            window.removeEventListener('scroll', arguments.callee);
+        }
+    }, 1000);
 }
