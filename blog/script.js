@@ -6,21 +6,17 @@ const navLinks = document.querySelectorAll('.nav-link');
 const blogPosts = document.getElementById('blogPosts');
 
 // Toggle Sidebar
-if (menuToggle) {
-    menuToggle.addEventListener('click', () => {
-        sidebar.classList.add('active');
-    });
-}
+menuToggle.addEventListener('click', () => {
+    sidebar.classList.add('active');
+});
 
-if (closeSidebar) {
-    closeSidebar.addEventListener('click', () => {
-        sidebar.classList.remove('active');
-    });
-}
+closeSidebar.addEventListener('click', () => {
+    sidebar.classList.remove('active');
+});
 
 // Close sidebar when clicking outside on mobile
 document.addEventListener('click', (e) => {
-    if (window.innerWidth <= 1024 && sidebar && menuToggle) {
+    if (window.innerWidth <= 1024) {
         if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
             sidebar.classList.remove('active');
         }
@@ -43,7 +39,7 @@ navLinks.forEach(link => {
             sidebar.classList.remove('active');
         }
         
-        // Filter posts based on category
+        // Filter posts based on category (you can expand this)
         const category = link.textContent.trim();
         filterPosts(category);
     });
@@ -83,6 +79,7 @@ const blogData = [
 
 // Filter posts function
 function filterPosts(category) {
+    // This is a simple example - you can expand it
     console.log(`Filtering posts for category: ${category}`);
     // Implement actual filtering logic here
 }
@@ -91,17 +88,12 @@ function filterPosts(category) {
 const searchInput = document.querySelector('.search-input');
 const searchBtn = document.querySelector('.search-btn');
 
-if (searchBtn) {
-    searchBtn.addEventListener('click', performSearch);
-}
-
-if (searchInput) {
-    searchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            performSearch();
-        }
-    });
-}
+searchBtn.addEventListener('click', performSearch);
+searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        performSearch();
+    }
+});
 
 function performSearch() {
     const searchTerm = searchInput.value.toLowerCase();
@@ -131,7 +123,7 @@ pageButtons.forEach(btn => {
         // Add active class to clicked button
         this.classList.add('active');
         
-        // Load new posts
+        // Load new posts (implement actual pagination logic)
         loadPage(this.textContent);
     });
 });
@@ -177,3 +169,98 @@ function createBlogPost(data) {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Blog site loaded successfully!');
 });
+function copyCode(button) {
+    // Button'ın bulunduğu wrapper'ı bul
+    const wrapper = button.closest('.code-block-wrapper');
+    
+    // Wrapper içindeki code elementini bul
+    const codeElement = wrapper.querySelector('pre code');
+    
+    if (!codeElement) {
+        console.error('Kod elementi bulunamadı');
+        return;
+    }
+    
+    // Kodu al (trim ile başındaki/sonundaki boşlukları temizle)
+    const code = codeElement.textContent.trim();
+    
+    // Kopyalama işlemi
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code)
+            .then(() => {
+                // Başarılı mesajı
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i> Kopyalandı!';
+                button.style.backgroundColor = '#4CAF50';
+                button.style.color = 'white';
+                
+                // 2 saniye sonra eski haline döndür
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.style.backgroundColor = '';
+                    button.style.color = '';
+                }, 2000);
+            })
+            .catch(err => {
+                console.error('Kopyalama hatası:', err);
+                fallbackCopy(code);
+            });
+    } else {
+        // Eski tarayıcılar için
+        fallbackCopy(code);
+    }
+}
+
+// Alternatif kopyalama metodu
+function fallbackCopy(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            // Geçici bildirim göster
+            showNotification('Kopyalandı!');
+        } else {
+            alert('Kopyalama başarısız');
+        }
+    } catch (err) {
+        console.error('Fallback kopyalama hatası:', err);
+        alert('Kopyalama başarısız. Lütfen manuel olarak kopyalayın.');
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+// Opsiyonel: Bildirim gösterme fonksiyonu
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 4px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 2000);
+}
