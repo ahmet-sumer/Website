@@ -299,6 +299,55 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
 }
+/* Pagination stilleri */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 40px;
+    padding: 20px;
+}
+
+#pageInfo {
+    color: #00ff6a;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.page-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* Blog kartları animasyonu */
+.blog-card {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* No results mesajı */
+.no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: #00ff6a;
+}
+
+.no-results i {
+    font-size: 48px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
 
 .page-btn:hover,
 .page-btn.active {
