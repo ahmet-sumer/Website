@@ -269,3 +269,89 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Sayfa yüklendiğinde
+document.addEventListener('DOMContentLoaded', function() {
+    // Tüm nav linkleri ve blog kartlarını al
+    const navLinks = document.querySelectorAll('.nav-link');
+    const blogCards = document.querySelectorAll('.blog-card');
+    
+    // Her nav linkine click event ekle
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            // Aktif class'ı güncelle
+            navLinks.forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Hash'i al (#security, #ctf vs.)
+            const hash = this.getAttribute('href').substring(1); // # işaretini kaldır
+            
+            // Blog kartlarını filtrele
+            filterBlogCards(hash);
+        });
+    });
+    
+    // URL'de hash varsa otomatik filtrele
+    if (window.location.hash) {
+        const hash = window.location.hash.substring(1);
+        filterBlogCards(hash);
+        
+        // İlgili nav linkini aktif yap
+        const activeLink = document.querySelector(`a[href="#${hash}"]`);
+        if (activeLink) {
+            navLinks.forEach(l => l.classList.remove('active'));
+            activeLink.classList.add('active');
+        }
+    }
+});
+
+// Blog kartlarını filtreleme fonksiyonu
+function filterBlogCards(category) {
+    const blogCards = document.querySelectorAll('.blog-card');
+    
+    // Eğer 'home' veya 'all' ise tüm kartları göster
+    if (category === 'home' || category === 'all') {
+        blogCards.forEach(card => {
+            card.style.display = 'block';
+            card.style.animation = 'fadeIn 0.5s ease';
+        });
+        return;
+    }
+    
+    // Diğer kategoriler için filtrele
+    blogCards.forEach(card => {
+        const cardCategory = card.getAttribute('data-category');
+        
+        if (cardCategory === category) {
+            card.style.display = 'block';
+            card.style.animation = 'fadeIn 0.5s ease';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    
+    // Eğer hiç kart yoksa bilgi mesajı göster
+    const visibleCards = document.querySelectorAll(`.blog-card[data-category="${category}"]:not([style*="display: none"])`);
+    if (visibleCards.length === 0) {
+        showNoResultsMessage(category);
+    }
+}
+
+// Sonuç bulunamadı mesajı
+function showNoResultsMessage(category) {
+    const container = document.querySelector('.blog-posts-container'); // Blog kartlarının bulunduğu container
+    
+    // Eğer zaten mesaj varsa kaldır
+    const existingMessage = container.querySelector('.no-results');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+    
+    const message = document.createElement('div');
+    message.className = 'no-results';
+    message.innerHTML = `
+        <i class="fas fa-search"></i>
+        <p>${category} kategorisinde henüz yazı bulunmuyor.</p>
+    `;
+    container.appendChild(message);
+}
