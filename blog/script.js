@@ -264,3 +264,87 @@ function showNotification(message) {
         }, 300);
     }, 2000);
 }
+// Mevcut kodlarınızın EN ÜSTÜNE bunları ekleyin
+let currentPage = 1;
+const postsPerPage = 4;
+let allPosts = [];
+let filteredPosts = [];
+
+// Sayfa yüklendiğinde çalışacak
+document.addEventListener('DOMContentLoaded', function() {
+    // Mevcut blog kartlarını topla
+    collectExistingPosts();
+    
+    // İlk sayfayı göster
+    showPage(1);
+    
+    // Butonlara tıklama olayları ekle
+    document.getElementById('prevBtn').addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            showPage(currentPage);
+        }
+    });
+    
+    document.getElementById('nextBtn').addEventListener('click', () => {
+        const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+        if (currentPage < totalPages) {
+            currentPage++;
+            showPage(currentPage);
+        }
+    });
+});
+
+// Mevcut HTML'deki blog kartlarını topla
+function collectExistingPosts() {
+    const existingCards = document.querySelectorAll('.blog-card');
+    
+    existingCards.forEach(card => {
+        const postData = {
+            html: card.outerHTML,
+            category: card.getAttribute('data-category')
+        };
+        allPosts.push(postData);
+    });
+    
+    // Başlangıçta tüm postları göster
+    filteredPosts = [...allPosts];
+}
+
+// Belirli bir sayfayı göster
+function showPage(page) {
+    const container = document.getElementById('blogPosts');
+    const start = (page - 1) * postsPerPage;
+    const end = start + postsPerPage;
+    const postsToShow = filteredPosts.slice(start, end);
+    
+    // Container'ı temizle
+    container.innerHTML = '';
+    
+    // Seçilen postları göster
+    postsToShow.forEach(post => {
+        container.innerHTML += post.html;
+    });
+    
+    // Sayfa bilgisini güncelle
+    updatePaginationInfo();
+    
+    // Sayfanın en üstüne git
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Pagination bilgilerini güncelle
+function updatePaginationInfo() {
+    const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+    
+    // Sayfa bilgisi
+    document.getElementById('pageInfo').textContent = `Sayfa ${currentPage} / ${totalPages}`;
+    
+    // Butonları aktif/pasif yap
+    document.getElementById('prevBtn').disabled = currentPage === 1;
+    document.getElementById('nextBtn').disabled = currentPage === totalPages;
+    
+    // Disabled butonlara stil ekle
+    document.getElementById('prevBtn').style.opacity = currentPage === 1 ? '0.5' : '1';
+    document.getElementById('nextBtn').style.opacity = currentPage === totalPages ? '0.5' : '1';
+}
