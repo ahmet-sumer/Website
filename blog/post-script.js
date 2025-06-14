@@ -237,3 +237,35 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('Post script loaded successfully!');
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const copyButtons = document.querySelectorAll('.copy-code-btn');
+    
+    copyButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const wrapper = this.parentElement;
+            const code = wrapper.querySelector('pre code');
+            
+            if (code) {
+                const text = code.textContent;
+                
+                // Textarea yöntemi
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.setAttribute('readonly', '');
+                textarea.style.position = 'absolute';
+                textarea.style.left = '-9999px';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                
+                // Görsel geri bildirim
+                this.innerHTML = '<i class="fas fa-check"></i> Kopyalandı!';
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-copy"></i> Kopyala';
+                }, 2000);
+            }
+        });
+    });
+});
