@@ -1,29 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/brands.min.css" integrity="sha512-AMDXrE+qaoUHsd0DXQJr5dL4m5xmpkGLxXZQik2TvR2VCVKT/XRPQ4e/LTnwl84mCv+eFm92UG6ErWDtGM/Q5Q==" crossorigin="anonymous" />
-        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="blog-section.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>PixRei</title>
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Pixrei - Security Blog & Portfolio">
+    <meta property="og:description" content="Penetration testing, CTF writeups ve security research konularında blog yazıları">
+    <meta property="og:image" content="https://pixrei.xyz/content/blog-preview.jpg">
 
-        <title>JS Course</title>
-    </head>
-    <body>
-        <header>
-            <h1>Hello World</h1>
-        </header>
-        <p id="date"></p>
-        <script src="first.js" >
-            const d = new Date();
-            document.getElementById("date").innerHTML = d;
-        </script>
-        <button onclick="document.getElementById('demo').innerHTML=Date()">The time is?</button>
-        <i class="fab fa-linkedin-in"></i>
-        <i class="fa-brands fa-linkedin"></i>
-        <a class="btn-cta-freequote" href="#">Get a FREE Quote <i class="fa fa-instagram"></i></a>
-        <a href=""><i class="fa-brands fa-linkedin-in"></i></a>
-        <p id="demo"></p>
-    </body>
+<!-- Blog için structured data -->
+ <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        "name": "Pixrei Security Blog",
+        "url": "https://blog.pixrei.xyz",
+        "description": "Cybersecurity, penetration testing ve CTF konularında teknik yazılar",
+        "author": {
+            "@type": "Person",
+            "name": "Ege Sumer",
+            "url": "https://pixrei.xyz"
+        }
+    }
+</script>
+
+    
+</head>
+<body>
+    <div class="welcome" id="welcome">
+        <h1 >Welcome</h1>
+    </div>  
+    <!--Navbar Start-->
+    <nav id="navbar">
+    <ul>
+        <li id="home"><a href="#main">Ana Sayfa</a></li>
+        <li id="news"><a href="#boxes">Hakkımda</a></li>
+        <li id="inform"><a href="#blog-section">Blog <span class="new-badge">NEW</span></a></li>
+        <li id="transition-for-info"><a href="https://blog.pixrei.xyz" target="_blank">Tüm Yazılar <i class="fas fa-external-link-alt"></i></a></li>
+        <li><a href="#last-section">İletişim</a></li>
+    </ul>
+</nav>
+<!--End of Navbar-->
+
+    <section id="main">
+        <div class="header-center">
+            <h3>
+                About Me
+            </h3>
+        </div>
+        <!--Start of Boxes Section-->
+        <section id="boxes">
+            <div class="box" id="box-1">
+                <div class="box-inner">
+                    <img class="box-img" src="content/programmer.jpeg" alt="Programmer">
+                    <div class="box-overlay">
+                        <div class="box-content">
+                            <h2 class="box-title">My Name is Ege</h2>
+                            <p class="box-subtitle">I'm a Software Engineer</p>
+                            <p class="box-subtitle">and Red Team Rookie</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box" id="box-2">
+                <div class="box-inner">
+                    <img class="box-img" src="content/astronaut.jpeg" alt="Astronaut">
+                    <div class="box-overlay">
+                        <div class="box-content">
+                            <a href="" class="box-icon">
+                                <i class="fa-solid fa-book"></i>
+                            </a>
+                            <p class="box-subtitle">People and Books that</p>
+                            <p class="box-subtitle">I've been Inspired with</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box" id="box-3">
+                <div class="box-inner">
+                    <img class="box-img" src="content/download.jpeg" alt="Projects">
+                    <div class="box-overlay">
+                        <div class="box-content">
+                            <h2 class="box-title">
+                                <a href="https://github.com/Ege-Sumer/Code-Tries" target="_blank">Projects</a>
+                            </h2>
+                            <p class="box-subtitle">Coming Soon</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!--End of Boxes Section-->
+
+        <!--Start of Section 2-->
+        <div class="header-center" id="header-center">
+            <h3>In Progress</h3>
+        </div>
+        <!-- Start of Blog Section -->
+<section id="blog-section" class="blog-preview-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Blog Yazılarım</h2>
+            <p class="section-subtitle">Security Research, CTF Writeups & Tutorials</p>
+        </div>
+        
+        <div class="blog-preview-grid">
+            <!-- Blog Post 1 -->
+            <article class="blog-preview-card">
+                <div class="blog-card-header">
+                    <span class="blog-category">Security</span>
+                    <span class="blog-date">15 Aralık 2024</span>
+                </div>
+                <h3 class="blog-card-title">
+                    <a href="https://blog.pixrei.xyz/posts/owasp-10.html">
+                        OWASP Top 10: Web Application Security Riskleri
+                    </a>
+                </h3>
+                <p class="blog-card-excerpt">
+                    Modern web uygulamalarında en sık karşılaşılan güvenlik açıklarını 
+                    ve bunlara karşı alınabilecek önlemleri detaylı olarak inceliyoruz...
+                </p>
+                <div class="blog-card-footer">
+                    <div class="blog-tags">
+                        <span class="blog-tag">#OWASP</span>
+                        <span class="blog-tag">#WebSecurity</span>
+                    </div>
+                    <a href="https://blog.pixrei.xyz/posts/owasp-10.html" class="read-more-link">
+                        Devamını Oku <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </article>
+
+            <!-- Blog Post 2 -->
+            <article class="blog-preview-card">
+                <div class="blog-card-header">
+                    <span class="blog-category">CTF</span>
+                    <span class="blog-date">10 Aralık 2024</span>
+                </div>
+                <h3 class="blog-card-title">
+                    <a href="https://blog.pixrei.xyz/posts/htb-keeper.html">
+                        HackTheBox - Keeper Makinesi Çözümü
+                    </a>
+                </h3>
+                <p class="blog-card-excerpt">
+                    HTB'nin popüler makinelerinden Keeper'ın detaylı çözüm adımları. 
+                    Initial foothold'dan root'a kadar tüm süreci açıklıyorum...
+                </p>
+                <div class="blog-card-footer">
+                    <div class="blog-tags">
+                        <span class="blog-tag">#HackTheBox</span>
+                        <span class="blog-tag">#CTF</span>
+                    </div>
+                    <a href="https://blog.pixrei.xyz/posts/htb-keeper.html" class="read-more-link">
+                        Devamını Oku <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </article>
+
+            <!-- Blog Post 3 -->
+            <article class="blog-preview-card">
+                <div class="blog-card-header">
+                    <span class="blog-category">Tools</span>
+                    <span class="blog-date">5 Aralık 2024</span>
+                </div>
+                <h3 class="blog-card-title">
+                    <a href="https://blog.pixrei.xyz/posts/burp-extensions.html">
+                        Burp Suite Extensions: En Kullanışlı 10 Eklenti
+                    </a>
+                </h3>
+                <p class="blog-card-excerpt">
+                    Web application penetration testing'de işinizi kolaylaştıracak 
+                    en iyi Burp Suite eklentilerini ve kullanım örneklerini...
+                </p>
+                <div class="blog-card-footer">
+                    <div class="blog-tags">
+                        <span class="blog-tag">#BurpSuite</span>
+                        <span class="blog-tag">#Tools</span>
+                    </div>
+                    <a href="https://blog.pixrei.xyz/posts/burp-extensions.html" class="read-more-link">
+                        Devamını Oku <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </article>
+        </div>
+
+        <div class="blog-section-footer">
+            <a href="https://blog.pixrei.xyz" class="view-all-posts">
+                Tüm Yazıları Görüntüle <i class="fas fa-external-link-alt"></i>
+            </a>
+        </div>
+    </div>
+</section>
+<!-- End of Blog Section -->
+
+        <!--End of Section 2-->
+
+        <div class="header-center">
+            <h3>contact with me</h3>
+        </div>
+
+        <!--Start of Last Section (Form & Logos)-->
+        <section class="last-section" id="last-section">
+            <hr class="form-logo-divider">
+            <div class="form">
+                <form action="">
+                    <label for="email"><input id="email" type="email" placeholder="E-Mail" autocomplete="off" required></label>
+                    <label for="name"><input id="name" type="text" placeholder="Your Name" autocomplete="off" required></label>
+                    <label for="write-box"><textarea name="text" id="write-box" placeholder="Inform me" rows="5px" required></textarea></label>
+                    <input type="submit" id="submit" value="Submit" class="submit-button">
+                </form>
+            </div>
+            
+            <ul id="logos">
+                <li><a href="https://www.linkedin.com/in/ahmet-ege-s%C3%BCmer-9156b7222/" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a></li>
+                <li><a href="https://www.instagram.com/pixrei.xyz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank"><i class="fab fa-instagram"></i></a></li>
+                <li><a href="https://github.com/Ege-Sumer" target="_blank"><i class="fab fa-github"></i></i></a></li>
+            </ul>
+        </section>
+        <!--End of Last Section (Form & Logos)-->
+    </section>
+    
+</body>
 </html>
