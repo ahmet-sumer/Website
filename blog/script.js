@@ -45,7 +45,7 @@ navLinks.forEach(link => {
     });
 });
 
-// Sample blog posts data
+
 const blogData = [
     {
         category: 'Security',
