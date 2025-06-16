@@ -10,17 +10,17 @@
     <title>PixRei</title>
     <meta property="og:type" content="website">
     <meta property="og:title" content="Pixrei - Security Blog & Portfolio">
-    <meta property="og:description" content="Penetration testing, CTF writeups ve security research konularında blog yazıları">
+    <meta property="og:description" content="Blog posts on penetration testing, CTF writeups and security research">
     <meta property="og:image" content="https://pixrei.xyz/content/blog-preview.jpg">
 
-<!-- Blog için structured data -->
+<!-- Blog structured data -->
  <script type="application/ld+json">
     {
         "@context": "https://schema.org",
         "@type": "Blog",
         "name": "Pixrei Security Blog",
         "url": "https://blog.pixrei.xyz",
-        "description": "Cybersecurity, penetration testing ve CTF konularında teknik yazılar",
+        "description": "Technical articles on cybersecurity, penetration testing and CTF",
         "author": {
             "@type": "Person",
             "name": "Ege Sumer",
@@ -38,14 +38,66 @@
     <!--Navbar Start-->
     <nav id="navbar">
     <ul>
-        <li id="home"><a href="#main">Ana Sayfa</a></li>
-        <li id="news"><a href="#boxes">Hakkımda</a></li>
+        <li id="home"><a href="#main">Home</a></li>
+        <li id="news"><a href="#boxes">About</a></li>
         <li id="inform"><a href="#blog-section">Blog <span class="new-badge">NEW</span></a></li>
-        <li id="transition-for-info"><a href="/blog" target="_blank">Tüm Yazılar <i class="fas fa-external-link-alt"></i></a></li>
-        <li><a href="#last-section">İletişim</a></li>
+        <li id="transition-for-info"><a href="/blog" target="_blank">All Posts <i class="fas fa-external-link-alt"></i></a></li>
+        <li><a href="#last-section">Contact</a></li>
     </ul>
 </nav>
 <!--End of Navbar-->
+    <section id="hero-section" class="hero-section">
+        <div class="hero-background">
+            <div class="floating-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+        </div>
+        <div class="hero-content">
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <div class="terminal-button red"></div>
+                    <div class="terminal-button yellow"></div>
+                    <div class="terminal-button green"></div>
+                    <span class="terminal-title">pixrei@root:~$</span>
+                </div>
+                <div class="terminal-body">
+                    <p class="terminal-line">
+                        <span class="prompt">$</span> whoami
+                    </p>
+                    <p class="terminal-output">Ege Sumer - Software Engineer & Security Researcher</p>
+                    <p class="terminal-line">
+                        <span class="prompt">$</span> cat skills.txt
+                    </p>
+                    <div class="terminal-output">
+                        <p>→ Web Application Security</p>
+                        <p>→ Penetration Testing</p>
+                        <p>→ CTF Player</p>
+                        <p>→ Full-Stack Development</p>
+                    </div>
+                    <p class="terminal-line">
+                        <span class="prompt">$</span> ls -la /interests/
+                    </p>
+                    <div class="terminal-output">
+                        <p>drwxr-xr-x  bug_bounty/</p>
+                        <p>drwxr-xr-x  reverse_engineering/</p>
+                        <p>drwxr-xr-x  exploit_development/</p>
+                        <p>-rw-r--r--  continuous_learning.md</p>
+                    </div>
+                    <p class="terminal-line typing">
+                        <span class="prompt">$</span> <span class="cursor">_</span>
+                    </p>
+                </div>
+            </div>
+            <div class="hero-cta">
+                <a href="#main" class="cta-button">
+                    <span>Explore My Work</span>
+                    <i class="fas fa-chevron-down"></i>
+                </a>
+            </div>
+        </div>
+    </section>
 
     <section id="main">
         <div class="header-center">
@@ -107,7 +159,7 @@
 <section id="blog-section" class="blog-preview-section">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title">Blog Yazılarım</h2>
+            <h2 class="section-title">My Blog Posts</h2>
             <p class="section-subtitle">Security Research, CTF Writeups & Tutorials</p>
         </div>
         
@@ -116,16 +168,16 @@
             <article class="blog-preview-card">
                 <div class="blog-card-header">
                     <span class="blog-category">Security</span>
-                    <span class="blog-date">15 Aralık 2024</span>
+                    <span class="blog-date">December 15, 2024</span>
                 </div>
                 <h3 class="blog-card-title">
                     <a href="/blog/Security/owasp-10.html">
-                        OWASP Top 10: Web Application Security Riskleri
+                        OWASP Top 10: Web Application Security Risks
                     </a>
                 </h3>
                 <p class="blog-card-excerpt">
-                    Modern web uygulamalarında en sık karşılaşılan güvenlik açıklarını 
-                    ve bunlara karşı alınabilecek önlemleri detaylı olarak inceliyoruz...
+                    We examine in detail the most common security vulnerabilities in modern web applications 
+                    and the measures that can be taken against them...
                 </p>
                 <div class="blog-card-footer">
                     <div class="blog-tags">
@@ -133,7 +185,7 @@
                         <span class="blog-tag">#WebSecurity</span>
                     </div>
                     <a href="#" class="read-more-link">
-                        Devamını Oku <i class="fas fa-arrow-right"></i>
+                        Read More <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
             </article>
@@ -142,16 +194,16 @@
             <article class="blog-preview-card">
                 <div class="blog-card-header">
                     <span class="blog-category">CTF</span>
-                    <span class="blog-date">10 Aralık 2024</span>
+                    <span class="blog-date">December 10, 2024</span>
                 </div>
                 <h3 class="blog-card-title">
                     <a href="https://blog.pixrei.xyz/posts/htb-keeper.html">
-                        HackTheBox - Keeper Makinesi Çözümü
+                        HackTheBox - Keeper Machine Walkthrough
                     </a>
                 </h3>
                 <p class="blog-card-excerpt">
-                    HTB'nin popüler makinelerinden Keeper'ın detaylı çözüm adımları. 
-                    Initial foothold'dan root'a kadar tüm süreci açıklıyorum...
+                    Detailed solution steps for Keeper, one of HTB's popular machines. 
+                    I explain the entire process from initial foothold to root...
                 </p>
                 <div class="blog-card-footer">
                     <div class="blog-tags">
@@ -159,7 +211,7 @@
                         <span class="blog-tag">#CTF</span>
                     </div>
                     <a href="#" class="read-more-link">
-                        Devamını Oku <i class="fas fa-arrow-right"></i>
+                        Read More <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
             </article>
@@ -168,16 +220,16 @@
             <article class="blog-preview-card">
                 <div class="blog-card-header">
                     <span class="blog-category">Tools</span>
-                    <span class="blog-date">5 Aralık 2024</span>
+                    <span class="blog-date">December 5, 2024</span>
                 </div>
                 <h3 class="blog-card-title">
                     <a href="#">
-                        Burp Suite Extensions: En Kullanışlı 10 Eklenti
+                        Burp Suite Extensions: Top 10 Most Useful Add-ons
                     </a>
                 </h3>
                 <p class="blog-card-excerpt">
-                    Web application penetration testing'de işinizi kolaylaştıracak 
-                    en iyi Burp Suite eklentilerini ve kullanım örneklerini...
+                    The best Burp Suite extensions that will make your job easier in web application 
+                    penetration testing and usage examples...
                 </p>
                 <div class="blog-card-footer">
                     <div class="blog-tags">
@@ -185,7 +237,7 @@
                         <span class="blog-tag">#Tools</span>
                     </div>
                     <a href="#" class="read-more-link">
-                        Devamını Oku <i class="fas fa-arrow-right"></i>
+                        Read More <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
             </article>
@@ -193,7 +245,7 @@
 
         <div class="blog-section-footer">
             <a href="/blog" class="view-all-posts">
-                Tüm Yazıları Görüntüle <i class="fas fa-external-link-alt"></i>
+                View All Posts <i class="fas fa-external-link-alt"></i>
             </a>
         </div>
     </div>
@@ -203,7 +255,7 @@
         <!--End of Section 2-->
 
         <div class="header-center">
-            <h3>contact with me</h3>
+            <h3>Contact Me</h3>
         </div>
 
         <!--Start of Last Section (Form & Logos)-->
@@ -213,7 +265,7 @@
                 <form action="">
                     <label for="email"><input id="email" type="email" placeholder="E-Mail" autocomplete="off" required></label>
                     <label for="name"><input id="name" type="text" placeholder="Your Name" autocomplete="off" required></label>
-                    <label for="write-box"><textarea name="text" id="write-box" placeholder="Inform me" rows="5px" required></textarea></label>
+                    <label for="write-box"><textarea name="text" id="write-box" placeholder="Your Message" rows="5px" required></textarea></label>
                     <input type="submit" id="submit" value="Submit" class="submit-button">
                 </form>
             </div>
