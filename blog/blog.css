@@ -769,3 +769,16 @@ input:focus-visible {
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
 }
+.icon-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--card-hover);
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--primary-green);
+    border: 1px solid var(--border-color);
+}
