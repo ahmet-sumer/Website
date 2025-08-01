@@ -5,6 +5,91 @@ const closeSidebar = document.getElementById('closeSidebar');
 const navLinks = document.querySelectorAll('.nav-link');
 const blogPosts = document.getElementById('blogPosts');
 
+// THEME TOGGLE - YENİ EKLENEN KISIM
+const themeToggle = document.getElementById('themeToggle');
+const mobileThemeToggle = document.getElementById('mobileThemeToggle');
+const themeIcon = document.getElementById('themeIcon');
+const mobileThemeIcon = document.getElementById('mobileThemeIcon');
+
+// Theme başlatma
+document.addEventListener('DOMContentLoaded', function() {
+    // Kaydedilmiş temayı yükle veya varsayılan olarak dark kullan
+    const savedTheme = localStorage.getItem('pixrei-theme') || 'dark';
+    setTheme(savedTheme);
+    
+    // Mevcut kodlarınız...
+    collectExistingPosts();
+    showPage(1);
+    
+    // Pagination butonları
+    document.getElementById('prevBtn').addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            showPage(currentPage);
+        }
+    });
+    
+    document.getElementById('nextBtn').addEventListener('click', () => {
+        const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+        if (currentPage < totalPages) {
+            currentPage++;
+            showPage(currentPage);
+        }
+    });
+});
+
+// Theme değiştirme fonksiyonu
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+}
+
+// Tema ayarlama fonksiyonu
+function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('pixrei-theme', theme);
+    updateThemeIcons(theme);
+    
+    // Smooth geçiş efekti
+    document.body.style.transition = 'all 0.3s ease';
+    setTimeout(() => {
+        document.body.style.transition = '';
+    }, 300);
+}
+
+// Theme ikonlarını güncelle
+function updateThemeIcons(theme) {
+    const iconClass = theme === 'dark' ? 'fa-sun' : 'fa-moon';
+    
+    if (themeIcon) {
+        themeIcon.className = `fas ${iconClass}`;
+    }
+    
+    if (mobileThemeIcon) {
+        mobileThemeIcon.className = `fas ${iconClass}`;
+    }
+}
+
+// Theme toggle butonları için event listener
+if (themeToggle) {
+    themeToggle.addEventListener('click', toggleTheme);
+}
+
+if (mobileThemeToggle) {
+    mobileThemeToggle.addEventListener('click', toggleTheme);
+}
+
+// Klavye kısayolu - T tuşu ile tema değiştirme
+document.addEventListener('keydown', (e) => {
+    if (e.key === 't' || e.key === 'T') {
+        if (!document.activeElement.matches('input, textarea')) {
+            toggleTheme();
+        }
+    }
+});
+// THEME TOGGLE SONU
+
 // Toggle Sidebar
 menuToggle.addEventListener('click', () => {
     sidebar.classList.add('active');
@@ -44,7 +129,6 @@ navLinks.forEach(link => {
         filterPosts(category);
     });
 });
-
 
 const blogData = [
     {
@@ -165,10 +249,6 @@ function createBlogPost(data) {
     `;
 }
 
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('Blog site loaded successfully!');
-});
 function copyCode(button) {
     // Button'ın bulunduğu wrapper'ı bul
     const wrapper = button.closest('.code-block-wrapper');
@@ -264,36 +344,12 @@ function showNotification(message) {
         }, 300);
     }, 2000);
 }
+
 // Mevcut kodlarınızın EN ÜSTÜNE bunları ekleyin
 let currentPage = 1;
 const postsPerPage = 4;
 let allPosts = [];
 let filteredPosts = [];
-
-// Sayfa yüklendiğinde çalışacak
-document.addEventListener('DOMContentLoaded', function() {
-    // Mevcut blog kartlarını topla
-    collectExistingPosts();
-    
-    // İlk sayfayı göster
-    showPage(1);
-    
-    // Butonlara tıklama olayları ekle
-    document.getElementById('prevBtn').addEventListener('click', () => {
-        if (currentPage > 1) {
-            currentPage--;
-            showPage(currentPage);
-        }
-    });
-    
-    document.getElementById('nextBtn').addEventListener('click', () => {
-        const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
-        if (currentPage < totalPages) {
-            currentPage++;
-            showPage(currentPage);
-        }
-    });
-});
 
 // Mevcut HTML'deki blog kartlarını topla
 function collectExistingPosts() {
@@ -311,7 +367,7 @@ function collectExistingPosts() {
     filteredPosts = [...allPosts];
 }
 
-// Belirli bir sayfayı göster
+// Belirli bir sayfayı göster  
 function showPage(page) {
     const container = document.getElementById('blogPosts');
     const start = (page - 1) * postsPerPage;
@@ -338,7 +394,7 @@ function updatePaginationInfo() {
     const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
     
     // Sayfa bilgisi
-    document.getElementById('pageInfo').textContent = `Sayfa ${currentPage} / ${totalPages}`;
+    document.getElementById('pageInfo').textContent = `${currentPage} / ${totalPages}`;
     
     // Butonları aktif/pasif yap
     document.getElementById('prevBtn').disabled = currentPage === 1;
