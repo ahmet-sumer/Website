@@ -1,392 +1,580 @@
-// Reading Progress Bar
-function updateReadingProgress() {
-    const article = document.querySelector('.post-content');
-    const progressBar = document.getElementById('readingProgress');
-    
-    if (!article || !progressBar) return;
-    
-    const articleTop = article.offsetTop;
-    const articleHeight = article.offsetHeight;
-    const windowHeight = window.innerHeight;
-    const scrollPosition = window.scrollY;
-    
-    const progress = Math.max(0, Math.min(100, 
-        ((scrollPosition - articleTop + windowHeight) / articleHeight) * 100
-    ));
-    
-    progressBar.style.width = progress + '%';
-}
+// Theme Management
+class ThemeManager {
+    constructor() {
+        this.themeToggle = document.getElementById('themeToggle');
+        this.themeIcon = document.getElementById('themeIcon');
+        this.init();
+    }
 
-// Copy Code Functionality - Global function for onclick
-window.copyCode = function(button) {
-    const pre = button.closest('pre');
-    const code = pre.querySelector('code');
-    const text = code.textContent || code.innerText;
-    
-    navigator.clipboard.writeText(text).then(() => {
-        const originalHTML = button.innerHTML;
-        button.innerHTML = '<i class="fas fa-check"></i> Kopyalandı!';
-        button.style.backgroundColor = '#00cc6a';
+    init() {
+        // Load saved theme or default to dark
+        const savedTheme = localStorage.getItem('pixrei-theme') || 'dark';
+        this.setTheme(savedTheme);
         
-        setTimeout(() => {
-            button.innerHTML = originalHTML;
-            button.style.backgroundColor = '';
-        }, 2000);
-    }).catch(err => {
-        console.error('Kopyalama hatası:', err);
-    });
-}
-
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-    // Update reading progress
-    updateReadingProgress();
-    window.addEventListener('scroll', updateReadingProgress);
-    window.addEventListener('resize', updateReadingProgress);
-    
-    // Add line numbers to code blocks
-    setTimeout(() => {
-        document.querySelectorAll('.post-content pre code').forEach((code) => {
-            const pre = code.parentElement;
-            
-            // Skip if already has line numbers
-            if (pre.querySelector('.line-numbers')) return;
-            
-            // Get lines
-            const text = code.textContent;
-            const lines = text.split('\n');
-            if (lines[lines.length - 1] === '') lines.pop();
-            
-            // Create line numbers
-            const lineNumbers = document.createElement('span');
-            lineNumbers.className = 'line-numbers';
-            lineNumbers.setAttribute('aria-hidden', 'true');
-            
-            for (let i = 1; i <= lines.length; i++) {
-                lineNumbers.textContent += i + '\n';
-            }
-            
-            pre.insertBefore(lineNumbers, code);
-            pre.style.position = 'relative';
-            pre.style.paddingLeft = '3.5em';
-        });
-    }, 100);
-    
-    // Mobile menu toggle
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    const closeSidebar = document.getElementById('closeSidebar');
-    
-    if (menuToggle && sidebar) {
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.add('active');
-        });
-    }
-    
-    if (closeSidebar && sidebar) {
-        closeSidebar.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-        });
-    }
-    
-    // Close sidebar when clicking outside
-    document.addEventListener('click', (e) => {
-        if (window.innerWidth <= 1024 && sidebar && menuToggle) {
-            if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
-                sidebar.classList.remove('active');
-            }
+        // Bind events
+        if (this.themeToggle) {
+            this.themeToggle.addEventListener('click', () => this.toggleTheme());
         }
-    });
-    
-    // Smooth scroll for table of contents
-    document.querySelectorAll('.table-of-contents a').forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const targetId = link.getAttribute('href').substring(1);
-            const targetElement = document.getElementById(targetId);
-            
-            if (targetElement) {
-                const offset = 80;
-                const targetPosition = targetElement.offsetTop - offset;
+
+        // Keyboard shortcut - T key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 't' || e.key === 'T') {
+                if (!document.activeElement.matches('input, textarea')) {
+                    this.toggleTheme();
+                }
+            }
+        });
+    }
+
+    toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        this.setTheme(newTheme);
+    }
+
+    setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('pixrei-theme', theme);
+        this.updateThemeIcon(theme);
+        
+        // Smooth transition
+        document.body.style.transition = 'all 0.3s ease';
+        setTimeout(() => {
+            document.body.style.transition = '';
+        }, 300);
+    }
+
+    updateThemeIcon(theme) {
+        if (this.themeIcon) {
+            const iconClass = theme === 'dark' ? 'fa-sun' : 'fa-moon';
+            this.themeIcon.className = `fas ${iconClass}`;
+        }
+    }
+}
+
+// Reading Progress Bar
+class ReadingProgress {
+    constructor() {
+        this.progressBar = document.getElementById('readingProgress');
+        this.init();
+    }
+
+    init() {
+        if (this.progressBar) {
+            window.addEventListener('scroll', () => this.updateProgress());
+            this.updateProgress();
+        }
+    }
+
+    updateProgress() {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        
+        this.progressBar.style.width = Math.min(scrolled, 100) + '%';
+    }
+}
+
+// Table of Contents Management
+class TableOfContents {
+    constructor() {
+        this.tocLinks = document.querySelectorAll('.table-of-contents a');
+        this.headings = document.querySelectorAll('h2[id], h3[id], h4[id]');
+        this.init();
+    }
+
+    init() {
+        this.bindEvents();
+        this.updateActiveSection();
+    }
+
+    bindEvents() {
+        // Smooth scrolling for TOC links
+        this.tocLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
                 
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    
+                    // Update URL without triggering scroll
+                    history.pushState(null, null, targetId);
+                }
+            });
+        });
+
+        // Update active section on scroll
+        window.addEventListener('scroll', () => this.updateActiveSection());
+    }
+
+    updateActiveSection() {
+        let current = '';
+        
+        this.headings.forEach(heading => {
+            const rect = heading.getBoundingClientRect();
+            if (rect.top <= 100) {
+                current = '#' + heading.id;
             }
         });
-    });
-    
-    // Highlight current section in TOC
-    const sections = document.querySelectorAll('.post-content h2[id], .post-content h3[id]');
-    const tocLinks = document.querySelectorAll('.table-of-contents a');
-    
-    function highlightTOC() {
-        let currentSection = '';
-        
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop - 100;
-            if (window.scrollY >= sectionTop) {
-                currentSection = section.getAttribute('id');
-            }
-        });
-        
-        tocLinks.forEach(link => {
+
+        // Update active TOC link
+        this.tocLinks.forEach(link => {
             link.classList.remove('active');
-            if (link.getAttribute('href') === `#${currentSection}`) {
+            if (link.getAttribute('href') === current) {
                 link.classList.add('active');
             }
         });
     }
+}
+
+// Code Copy Functionality
+function copyCode(button) {
+    const wrapper = button.closest('.code-block-wrapper');
+    const codeElement = wrapper.querySelector('pre code');
     
-    window.addEventListener('scroll', highlightTOC);
-    highlightTOC();
-    
-    // Comment form
-    const commentForm = document.getElementById('commentForm');
-    if (commentForm) {
-        commentForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const name = document.getElementById('commentName').value;
-            const email = document.getElementById('commentEmail').value;
-            const text = document.getElementById('commentText').value;
-            
-            console.log('Yorum gönderildi:', { name, email, text });
-            
-            const successMessage = document.createElement('div');
-            successMessage.className = 'alert alert-success';
-            successMessage.innerHTML = '<i class="fas fa-check-circle"></i> Yorumunuz başarıyla gönderildi!';
-            
-            commentForm.appendChild(successMessage);
-            commentForm.reset();
-            
-            setTimeout(() => {
-                successMessage.remove();
-            }, 5000);
-        });
+    if (!codeElement) {
+        console.error('Code element not found');
+        return;
     }
     
-    // Dark mode toggle
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    if (darkModeToggle) {
-        darkModeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('light-mode');
-            const icon = darkModeToggle.querySelector('i');
-            
-            if (document.body.classList.contains('light-mode')) {
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
-                localStorage.setItem('theme', 'light');
-            } else {
-                icon.classList.remove('fa-sun');
-                icon.classList.add('fa-moon');
-                localStorage.setItem('theme', 'dark');
-            }
-        });
-        
-        // Load saved theme
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'light') {
-            document.body.classList.add('light-mode');
-            const icon = darkModeToggle.querySelector('i');
-            if (icon) {
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
-            }
-        }
-    }
+    const code = codeElement.textContent.trim();
     
-    // Image zoom
-    document.querySelectorAll('.post-content img').forEach(img => {
-        img.style.cursor = 'zoom-in';
-        
-        img.addEventListener('click', () => {
-            const overlay = document.createElement('div');
-            overlay.className = 'image-overlay';
-            overlay.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, 0.9);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 1000;
-                cursor: zoom-out;
-            `;
-            
-            const zoomedImg = document.createElement('img');
-            zoomedImg.src = img.src;
-            zoomedImg.style.cssText = `
-                max-width: 90%;
-                max-height: 90%;
-                border-radius: 8px;
-            `;
-            
-            overlay.appendChild(zoomedImg);
-            document.body.appendChild(overlay);
-            
-            overlay.addEventListener('click', () => {
-                overlay.remove();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code)
+            .then(() => {
+                showCopySuccess(button);
+            })
+            .catch(err => {
+                console.error('Copy failed:', err);
+                fallbackCopy(code, button);
             });
-        });
-    });
-    
-    console.log('Post script loaded successfully!');
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    const copyButtons = document.querySelectorAll('.copy-code-btn');
-    
-    copyButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const wrapper = this.parentElement;
-            const code = wrapper.querySelector('pre code');
-            
-            if (code) {
-                const text = code.textContent;
-                
-                
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                textarea.setAttribute('readonly', '');
-                textarea.style.position = 'absolute';
-                textarea.style.left = '-9999px';
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                
-                
-                this.innerHTML = '<i class="fas fa-check"></i> Kopyalandı!';
-                setTimeout(() => {
-                    this.innerHTML = '<i class="fas fa-copy"></i> Kopyala';
-                }, 2000);
-            }
-        });
-    });
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    const navLinks = document.querySelectorAll('.nav-link');
-    const blogCards = document.querySelectorAll('.blog-card');
-    
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            navLinks.forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
-            
-            
-            const hash = this.getAttribute('href').substring(1); 
-            
-            
-            filterBlogCards(hash);
-        });
-    });
-    
-    if (window.location.hash) {
-        const hash = window.location.hash.substring(1);
-        filterBlogCards(hash);
-        
-        const activeLink = document.querySelector(`a[href="#${hash}"]`);
-        if (activeLink) {
-            navLinks.forEach(l => l.classList.remove('active'));
-            activeLink.classList.add('active');
-        }
-    }
-});
-
-function filterBlogCards(category) {
-    // Kategoriyi filtrele
-    if (category === 'home' || category === 'all') {
-        filteredPosts = [...allPosts];
     } else {
-        filteredPosts = allPosts.filter(post => post.category === category);
-    }
-    
-    currentPage = 1;
-    
-    // Sonuçları göster
-    if (filteredPosts.length === 0) {
-        document.getElementById('blogPosts').innerHTML = `
-            <div class="no-results">
-                <i class="fas fa-search"></i>
-                <p>${category} kategorisinde yazı bulunmuyor.</p>
-            </div>
-        `;
-        document.querySelector('.pagination').style.display = 'none';
-    } else {
-        document.querySelector('.pagination').style.display = 'flex';
-        showPage(1);
+        fallbackCopy(code, button);
     }
 }
 
-
-function showNoResultsMessage(category) {
-    const container = document.querySelector('.blog-posts-container'); 
-    
-    
-    const existingMessage = container.querySelector('.no-results');
-    if (existingMessage) {
-        existingMessage.remove();
-    }
-    
-    const message = document.createElement('div');
-    message.className = 'no-results';
-    message.innerHTML = `
-        <i class="fas fa-search"></i>
-        <p>${category} kategorisinde henüz yazı bulunmuyor.</p>
-    `;
-    container.appendChild(message);
-}
-
-
-
-
-let isLoading = false;
-let currentLoadedPosts = 4;
-
-function initInfiniteScroll() {
-    window.addEventListener('scroll', () => {
-        if (isLoading) return;
-        
-        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-        
-       
-        if (scrollTop + clientHeight >= scrollHeight - 100) {
-            loadMorePosts();
-        }
-    });
-}
-
-function loadMorePosts() {
-    isLoading = true;
-    
-  
-    const loader = document.createElement('div');
-    loader.className = 'post-loader';
-    loader.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yükleniyor...';
-    document.getElementById('blogPosts').appendChild(loader);
-    
+function showCopySuccess(button) {
+    const originalHTML = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    button.style.background = 'var(--primary-green)';
     
     setTimeout(() => {
-        const newPosts = allBlogPosts.slice(currentLoadedPosts, currentLoadedPosts + 4);
-        
-        newPosts.forEach(post => {
-            const postHTML = createPostHTML(post);
-            document.getElementById('blogPosts').insertAdjacentHTML('beforeend', postHTML);
-        });
-        
-        currentLoadedPosts += 4;
-        loader.remove();
-        isLoading = false;
-        
-        
-        if (currentLoadedPosts >= allBlogPosts.length) {
-            window.removeEventListener('scroll', arguments.callee);
-        }
-    }, 1000);
+        button.innerHTML = originalHTML;
+        button.style.background = '';
+    }, 2000);
 }
+
+function fallbackCopy(text, button) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            showCopySuccess(button);
+        } else {
+            showNotification('Copy failed');
+        }
+    } catch (err) {
+        console.error('Fallback copy failed:', err);
+        showNotification('Copy failed. Please copy manually.');
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+// Comment System
+class CommentSystem {
+    constructor() {
+        this.commentForm = document.getElementById('commentForm');
+        this.init();
+    }
+
+    init() {
+        if (this.commentForm) {
+            this.commentForm.addEventListener('submit', (e) => this.handleSubmit(e));
+        }
+    }
+
+    handleSubmit(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('commentName').value;
+        const email = document.getElementById('commentEmail').value;
+        const text = document.getElementById('commentText').value;
+        
+        if (!name || !email || !text) {
+            showNotification('Please fill in all fields', 'error');
+            return;
+        }
+        
+        // Here you would normally send to your backend
+        this.addComment({ name, email, text });
+        this.commentForm.reset();
+        showNotification('Comment submitted successfully!', 'success');
+    }
+
+    addComment(commentData) {
+        const commentsList = document.querySelector('.comments-list');
+        const commentElement = this.createCommentElement(commentData);
+        commentsList.insertAdjacentHTML('afterbegin', commentElement);
+    }
+
+    createCommentElement(data) {
+        return `
+            <div class="comment">
+                <div class="comment-header">
+                    <div class="comment-author">
+                        <div class="comment-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <strong>${data.name}</strong>
+                    </div>
+                    <span class="comment-date">Just now</span>
+                </div>
+                <div class="comment-content">
+                    <p>${data.text}</p>
+                </div>
+            </div>
+        `;
+    }
+}
+
+// Image Zoom Functionality
+class ImageZoom {
+    constructor() {
+        this.images = document.querySelectorAll('.post-content img');
+        this.init();
+    }
+
+    init() {
+        this.images.forEach(img => {
+            img.style.cursor = 'zoom-in';
+            img.addEventListener('click', () => this.openZoom(img));
+        });
+    }
+
+    openZoom(img) {
+        const overlay = document.createElement('div');
+        overlay.className = 'image-overlay';
+        overlay.innerHTML = `<img src="${img.src}" alt="${img.alt}" class="zoomed-image">`;
+        
+        document.body.appendChild(overlay);
+        document.body.style.overflow = 'hidden';
+        
+        overlay.addEventListener('click', () => this.closeZoom(overlay));
+        
+        // ESC key to close
+        const handleKeydown = (e) => {
+            if (e.key === 'Escape') {
+                this.closeZoom(overlay);
+                document.removeEventListener('keydown', handleKeydown);
+            }
+        };
+        document.addEventListener('keydown', handleKeydown);
+    }
+
+    closeZoom(overlay) {
+        document.body.removeChild(overlay);
+        document.body.style.overflow = '';
+    }
+}
+
+// Share Functionality
+class ShareManager {
+    constructor() {
+        this.bindShareButtons();
+    }
+
+    bindShareButtons() {
+        const shareButtons = document.querySelectorAll('.share-btn');
+        shareButtons.forEach(btn => {
+            if (btn.getAttribute('href') === 'mailto:') {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.copyToClipboard();
+                });
+            }
+        });
+    }
+
+    copyToClipboard() {
+        const url = window.location.href;
+        const title = document.title;
+        
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(url).then(() => {
+                showNotification('Link copied to clipboard!', 'success');
+            });
+        } else {
+            // Fallback
+            const textArea = document.createElement("textarea");
+            textArea.value = url;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showNotification('Link copied to clipboard!', 'success');
+        }
+    }
+}
+
+// Notification System
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? 'var(--primary-green)' : type === 'error' ? '#e74c3c' : 'var(--primary-blue)'};
+        color: ${type === 'success' || type === 'error' ? 'white' : 'var(--bg-dark)'};
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        z-index: 10000;
+        font-weight: 600;
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Animate out and remove
+    setTimeout(() => {
+        notification.style.transform = 'translateX(400px)';
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}
+
+// Line Numbers for Code Blocks
+class CodeLineNumbers {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        const codeBlocks = document.querySelectorAll('.code-block-wrapper pre code');
+        codeBlocks.forEach(code => this.addLineNumbers(code));
+    }
+
+    addLineNumbers(codeElement) {
+        const lines = codeElement.textContent.split('\n');
+        const lineCount = lines.length;
+        
+        // Don't add line numbers if there's only one line
+        if (lineCount <= 1) return;
+        
+        const pre = codeElement.parentElement;
+        
+        // Check if line numbers already exist
+        if (pre.querySelector('.line-numbers')) return;
+        
+        const lineNumbers = document.createElement('div');
+        lineNumbers.className = 'line-numbers';
+        
+        for (let i = 1; i <= lineCount; i++) {
+            const lineNumber = document.createElement('div');
+            lineNumber.textContent = i;
+            lineNumbers.appendChild(lineNumber);
+        }
+        
+        pre.insertBefore(lineNumbers, codeElement);
+    }
+}
+
+// Smooth Scroll for Anchor Links
+class SmoothScroll {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        const anchorLinks = document.querySelectorAll('a[href^="#"]');
+        anchorLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                const targetId = link.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    e.preventDefault();
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    }
+}
+
+// Performance Monitor
+class PerformanceMonitor {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        window.addEventListener('load', () => {
+            if ('performance' in window) {
+                const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+                console.log(`Page loaded in ${loadTime}ms`);
+                
+                // Report Core Web Vitals if available
+                if ('web-vital' in window) {
+                    this.reportWebVitals();
+                }
+            }
+        });
+    }
+
+    reportWebVitals() {
+        // This would integrate with your analytics
+        console.log('Web Vitals monitoring active');
+    }
+}
+
+// Main Application
+class PostPageApp {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.initializeComponents());
+        } else {
+            this.initializeComponents();
+        }
+    }
+
+    initializeComponents() {
+        try {
+            // Initialize all components
+            this.themeManager = new ThemeManager();
+            this.readingProgress = new ReadingProgress();
+            this.tableOfContents = new TableOfContents();
+            this.commentSystem = new CommentSystem();
+            this.imageZoom = new ImageZoom();
+            this.shareManager = new ShareManager();
+            this.codeLineNumbers = new CodeLineNumbers();
+            this.smoothScroll = new SmoothScroll();
+            this.performanceMonitor = new PerformanceMonitor();
+
+            // Add loaded class to body
+            document.body.classList.add('loaded');
+            
+            console.log('Post page initialized successfully');
+        } catch (error) {
+            console.error('Error initializing post page:', error);
+        }
+    }
+}
+
+// Initialize the application
+const app = new PostPageApp();
+
+// Additional utility functions
+const Utils = {
+    debounce: (func, wait) => {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    },
+
+    throttle: (func, limit) => {
+        let inThrottle;
+        return function() {
+            const args = arguments;
+            const context = this;
+            if (!inThrottle) {
+                func.apply(context, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
+    },
+
+    formatDate: (date) => {
+        return new Intl.DateTimeFormat('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        }).format(new Date(date));
+    }
+};
+
+// Export for external use
+window.PostPage = {
+    ThemeManager,
+    ReadingProgress,
+    TableOfContents,
+    CommentSystem,
+    ImageZoom,
+    ShareManager,
+    Utils
+};
+
+// Handle browser back/forward navigation
+window.addEventListener('popstate', (e) => {
+    console.log('Navigation state changed');
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+    // ESC key to close any modals
+    if (e.key === 'Escape') {
+        const overlay = document.querySelector('.image-overlay');
+        if (overlay) {
+            document.body.removeChild(overlay);
+            document.body.style.overflow = '';
+        }
+    }
+    
+    // Ctrl/Cmd + K to focus search (if exists)
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        const searchInput = document.querySelector('input[type="search"], input[placeholder*="search"]');
+        if (searchInput) {
+            searchInput.focus();
+        }
+    }
+});
+
+// Print optimization
+window.addEventListener('beforeprint', () => {
+    document.body.classList.add('printing');
+});
+
+window.addEventListener('afterprint', () => {
+    document.body.classList.remove('printing');
+});
