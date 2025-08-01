@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-XSS-Protection" content="0">
     <title>OWASP Top 10 - Pixrei Blog</title>
     
     <link rel="stylesheet" href="/blog/post-style.css">
@@ -23,7 +24,7 @@
             <!-- Breadcrumb -->
             <div class="breadcrumb">
                 <a href="https://pixrei.xyz">Main Page</a> / 
-                <a href="https://pixrei.xyz/blog/index.html">Blog</a> / 
+                <a href="../blog.html">Blog</a> / 
                 <span>OWASP Top 10</span>
             </div>
 
@@ -36,7 +37,7 @@
                     </div>
                     <div class="author-info">
                         <p class="author-name">R3i 0Trox</p>
-                        <p class="post-date">2025 • 10 min read</p>
+                        <p class="post-date">2025 • 20 min read</p>
                     </div>
                 </div>
             </div>
@@ -49,6 +50,12 @@
                     <li><a href="#broken-auth">2. Broken Authentication</a></li>
                     <li><a href="#sensitive-data">3. Sensitive Data Exposure</a></li>
                     <li><a href="#xxe">4. XML External Entities (XXE)</a></li>
+                    <li><a href="#broken-access">5. Broken Access Control</a></li>
+                    <li><a href="#security-misconfig">6. Security Misconfiguration</a></li>
+                    <li><a href="#xss">7. Cross-Site Scripting (XSS)</a></li>
+                    <li><a href="#insecure-deserialization">8. Insecure Deserialization</a></li>
+                    <li><a href="#vulnerable-components">9. Using Components with Known Vulnerabilities</a></li>
+                    <li><a href="#insufficient-logging">10. Insufficient Logging &amp; Monitoring</a></li>
                 </ul>
             </div>
 
@@ -94,8 +101,7 @@ cursor.execute(query)
 
 // Secure code example - Using parameterized queries
 query = "SELECT * FROM users WHERE username = ? AND password = ?"
-cursor.execute(query, (username, password))
-                    </code></pre>
+cursor.execute(query, (username, password))</code></pre>
                 </div>
 
                 <h3>NoSQL Injection</h3>
@@ -120,8 +126,7 @@ const user = db.users.findOne({
 const user = db.users.findOne({
     username: String(req.body.username),
     password: String(req.body.password)
-});
-                </code></pre>
+});</code></pre>
                 </div>
 
                 <h2 id="broken-auth">2. Broken Authentication</h2>
@@ -193,7 +198,7 @@ class SecureAuth:
         token = self.generate_session_token()
         expiry = datetime.utcnow() + timedelta(hours=2)
                             
-         Save session to database
+        // Save session to database
         session = {
             'token': token,
             'user_id': user_id,
@@ -203,8 +208,7 @@ class SecureAuth:
             'user_agent': request.headers.get('User-Agent')
         }
                             
-        return session
-                </code></pre>
+        return session</code></pre>
                 </div>
 
                 <h2 id="sensitive-data">3. Sensitive Data Exposure</h2>
@@ -231,6 +235,54 @@ class SecureAuth:
                     strategies are critical in this regard.
                 </div>
 
+                <h3>Encryption Implementation Example</h3>
+                <div class="code-block-wrapper">
+                    <button class="copy-code-btn" onclick="copyCode(this)">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                    <pre data-language="python"><code class="language-python">
+from cryptography.fernet import Fernet
+import os
+import base64
+
+class DataEncryption:
+    def __init__(self):
+        // Generate or load encryption key
+        self.key = self.get_or_create_key()
+        self.cipher = Fernet(self.key)
+    
+    def get_or_create_key(self):
+        key_file = 'encryption.key'
+        if os.path.exists(key_file):
+            with open(key_file, 'rb') as file:
+                return file.read()
+        else:
+            key = Fernet.generate_key()
+            with open(key_file, 'wb') as file:
+                file.write(key)
+            return key
+    
+    def encrypt_data(self, data):
+        if isinstance(data, str):
+            data = data.encode()
+        encrypted = self.cipher.encrypt(data)
+        return base64.urlsafe_b64encode(encrypted).decode()
+    
+    def decrypt_data(self, encrypted_data):
+        encrypted_bytes = base64.urlsafe_b64decode(encrypted_data.encode())
+        decrypted = self.cipher.decrypt(encrypted_bytes)
+        return decrypted.decode()
+
+// Usage example
+encryptor = DataEncryption()
+sensitive_data = "Credit Card: 1234-5678-9012-3456"
+encrypted = encryptor.encrypt_data(sensitive_data)
+print(f"Encrypted: {encrypted}")
+
+decrypted = encryptor.decrypt_data(encrypted)
+print(f"Decrypted: {decrypted}")</code></pre>
+                </div>
+
                 <h2 id="xxe">4. XML External Entities (XXE)</h2>
                 <p>
                     Security vulnerability that occurs when misconfigured XML processors 
@@ -241,15 +293,14 @@ class SecureAuth:
                         <i class="fas fa-copy"></i> Copy
                     </button>
                     <pre data-language="xml"><code class="language-xml">
-&lt;!// Dangerous XML example --&gt ;
+&lt;"!-- Dangerous XML example --"&gt;
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;!DOCTYPE data [
 &lt;!ENTITY xxe SYSTEM "file:///etc/passwd"&gt;
 ]&gt;
 &lt;data&gt;
-    &lt;user&gt;&xxe;&lt;/user&gt;
-&lt;/data&gt;
-                    </code></pre>
+    &lt;user&gt;&amp;xxe;&lt;/user&gt;
+&lt;/data&gt;</code></pre>
                 </div>
 
                 <h3>XXE Protection Methods</h3>
@@ -280,14 +331,646 @@ def parse_json_safely(json_string):
         return data
     except json.JSONDecodeError as e:
         logger.error(f"JSON parsing error: {e}")
+        return None</code></pre>
+                </div>
+
+                <h2 id="broken-access">5. Broken Access Control</h2>
+                <p>
+                    Access control vulnerabilities occur when users can act outside of their intended permissions. 
+                    This can result in unauthorized information disclosure, modification, or destruction.
+                </p>
+
+                <div class="alert alert-danger">
+                    <strong>Critical!</strong> Broken Access Control moved from #5 to #1 in OWASP Top 10 2021, 
+                    showing its increasing prevalence.
+                </div>
+
+                <h3>Common Access Control Failures</h3>
+                <ul>
+                    <li><strong>Vertical Privilege Escalation:</strong> User gains admin privileges</li>
+                    <li><strong>Horizontal Privilege Escalation:</strong> User accesses other users' data</li>
+                    <li><strong>IDOR (Insecure Direct Object References):</strong> Direct access via URL manipulation</li>
+                    <li><strong>Missing Function Level Access Control:</strong> API endpoints without proper checks</li>
+                </ul>
+
+                <h3>Vulnerable Code Example</h3>
+                <div class="code-block-wrapper">
+                    <button class="copy-code-btn" onclick="copyCode(this)">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                                        <pre data-language="python"><code class="language-python">
+// Vulnerable - No access control check
+@app.route('/api/user/&lt;int:user_id&gt;/profile')
+def get_user_profile(user_id):
+    user = User.query.get(user_id)
+    return jsonify(user.to_dict())
+
+// Attacker can access any user's profile:
+// GET /api/user/123/profile
+// GET /api/user/456/profile
+
+// Secure - Proper access control
+@app.route('/api/user/&lt;int:user_id&gt;/profile')
+@login_required
+def get_user_profile(user_id):
+    // Check if current user can access this profile
+    if current_user.id != user_id and not current_user.is_admin:
+        abort(403)  // Forbidden
+    
+    user = User.query.get_or_404(user_id)
+    return jsonify(user.to_dict())</code></pre>
+                </div>
+
+                <h2 id="security-misconfig">6. Security Misconfiguration</h2>
+                <p>
+                    Security misconfiguration occurs when security settings are not properly defined, 
+                    implemented, or maintained. This includes insecure default configurations, 
+                    incomplete or ad-hoc configurations, open cloud storage, misconfigured HTTP headers.
+                </p>
+
+                <h3>Common Misconfigurations</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Misconfiguration</th>
+                            <th>Impact</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Web Server</td>
+                            <td>Default credentials, unnecessary services enabled</td>
+                            <td>Full server compromise</td>
+                        </tr>
+                        <tr>
+                            <td>Database</td>
+                            <td>Default passwords, open to internet</td>
+                            <td>Data breach</td>
+                        </tr>
+                        <tr>
+                            <td>Cloud Storage</td>
+                            <td>Public read/write permissions</td>
+                            <td>Data exposure</td>
+                        </tr>
+                        <tr>
+                            <td>HTTP Headers</td>
+                            <td>Missing security headers</td>
+                            <td>XSS, Clickjacking attacks</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Security Headers Implementation</h3>
+                <div class="code-block-wrapper">
+                    <button class="copy-code-btn" onclick="copyCode(this)">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                    <pre data-language="python"><code class="language-python">
+from flask import Flask, make_response
+
+app = Flask(__name__)
+
+@app.after_request
+def set_security_headers(response):
+    // Prevent XSS attacks
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    
+    // HTTPS enforcement
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    
+    // Content Security Policy
+    response.headers['Content-Security-Policy'] = "default-src 'self'"
+    
+    // Referrer Policy
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    
+    return response
+
+// Environment-specific configuration
+class Config:
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-key-change-in-production'
+    DEBUG = False
+    TESTING = False
+
+class DevelopmentConfig(Config):
+    DEBUG = True
+
+class ProductionConfig(Config):
+    // Never use debug mode in production!
+    DEBUG = False
+    // Use strong secret key from environment
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    if not SECRET_KEY:
+        raise ValueError("No SECRET_KEY set for production!")</code></pre>
+                </div>
+
+                <h2 id="xss">7. Cross-Site Scripting (XSS)</h2>
+                <p>
+                    XSS flaws occur when an application includes untrusted data in a new web page 
+                    without proper validation or escaping. XSS allows attackers to execute scripts 
+                    in the victim's browser which can hijack user sessions, deface web sites, or redirect users.
+                </p>
+
+                <div class="alert alert-warning">
+                    <strong>Impact:</strong> XSS can lead to session hijacking, account takeover, 
+                    defacement, and malware distribution.
+                </div>
+
+                <h3>Types of XSS</h3>
+                <ul>
+                    <li><strong>Reflected XSS:</strong> Malicious script echoed back from web server</li>
+                    <li><strong>Stored XSS:</strong> Malicious script stored in database/file</li>
+                    <li><strong>DOM-based XSS:</strong> Vulnerability exists in client-side code</li>
+                </ul>
+
+                <h3>XSS Examples and Prevention</h3>
+                <div class="code-block-wrapper">
+                    <button class="copy-code-btn" onclick="copyCode(this)">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                    <pre data-language="javascript"><code class="language-javascript">
+\\ Vulnerable code - Reflected XSS
+app.get('/search', (req, res) =&gt; {
+    const query = req.query.q;
+    res.send(`&lt;h1&gt;Search results for: ${query}&lt;/h1&gt;`);
+    \\ Attacker can use: /search?q=&lt;script&gt;alert('XSS')&lt;/script&gt;
+});
+
+\\ Secure code - Proper escaping
+const escapeHtml = (unsafe) =&gt; {
+    return unsafe
+        .replace(/&amp;/g, "&amp;amp;")
+        .replace(/&lt;/g, "&amp;lt;")
+        .replace(/&gt;/g, "&amp;gt;")
+        .replace(/"/g, "&amp;quot;")
+        .replace(/'/g, "&amp;#039;");
+};
+
+app.get('/search', (req, res) =&gt; {
+    const query = escapeHtml(req.query.q);
+    res.send(`&lt;h1&gt;Search results for: ${query}&lt;/h1&gt;`);
+});
+
+\\ Using template engine with auto-escaping (Recommended)
+app.set('view engine', 'ejs');
+app.get('/search', (req, res) =&gt; {
+    res.render('search', { query: req.query.q }); \\ EJS auto-escapes by default \\
+});</code></pre>
+                </div>
+
+                <h3>Client-Side XSS Prevention</h3>
+                <div class="code-block-wrapper">
+                    <button class="copy-code-btn" onclick="copyCode(this)">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                    <pre data-language="javascript"><code class="language-javascript">
+\\ Vulnerable DOM manipulation
+function displayUserComment(comment) {
+    document.getElementById('comments').innerHTML += '&lt;div&gt;' + comment + '&lt;/div&gt;';
+}
+
+\\ Secure DOM manipulation
+function displayUserCommentSafe(comment) {
+    const div = document.createElement('div');
+    div.textContent = comment; \\textContent automatically escapes\\
+    document.getElementById('comments').appendChild(div);
+}
+
+\\ Input validation and sanitization
+function sanitizeInput(input) {
+    return input
+        .replace(/&amp;/g, '&amp;amp;')
+        .replace(/&lt;/g, '&amp;lt;')
+        .replace(/&gt;/g, '&amp;gt;')
+        .replace(/"/g, '&amp;quot;')
+        .replace(/'/g, '&amp;#x27;');
+}
+
+\\ Modern framework safe patterns
+function createSafeElement(tag, content) {
+    const element = document.createElement(tag);
+    element.textContent = content; \\Safe from XSS\\
+    return element;
+}</code></pre>
+                </div>
+
+                <h2 id="insecure-deserialization">8. Insecure Deserialization</h2>
+                <p>
+                    Insecure deserialization often leads to remote code execution. Even if 
+                    deserialization flaws do not result in remote code execution, they can be used 
+                    to perform attacks including replay attacks, injection attacks, and privilege escalation.
+                </p>
+
+                <div class="alert alert-danger">
+                    <strong>High Risk!</strong> Successful exploitation of deserialization flaws 
+                    can result in complete system compromise.
+                </div>
+
+                <h3>Vulnerable Deserialization Example</h3>
+                <div class="code-block-wrapper">
+                    <button class="copy-code-btn" onclick="copyCode(this)">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                    <pre data-language="python"><code class="language-python">
+import pickle
+import base64
+
+// Vulnerable code - Never deserialize untrusted data!
+def load_user_session(session_data):
+    try:
+        // Dangerous! Can execute arbitrary code
+        session = pickle.loads(base64.b64decode(session_data))
+        return session
+    except:
         return None
-                    </code></pre>
+
+// Attacker can create malicious pickle payload:
+class MaliciousPayload:
+    def __reduce__(self):
+        import os
+        return (os.system, ('rm -rf /',))  // Dangerous payload
+
+// Safe alternatives
+import json
+import hmac
+import hashlib
+
+class SecureSessionManager:
+    def __init__(self, secret_key):
+        self.secret_key = secret_key
+    
+    def create_session(self, user_data):
+        // Use JSON for safe serialization
+        session_json = json.dumps(user_data)
+        
+        // Create HMAC signature
+        signature = hmac.new(
+            self.secret_key.encode(),
+            session_json.encode(),
+            hashlib.sha256
+        ).hexdigest()
+        
+        return base64.b64encode(f"{session_json}:{signature}".encode())
+    
+    def load_session(self, session_data):
+        try:
+            decoded = base64.b64decode(session_data).decode()
+            session_json, signature = decoded.rsplit(':', 1)
+            
+            // Verify signature
+            expected_sig = hmac.new(
+                self.secret_key.encode(),
+                session_json.encode(),
+                hashlib.sha256
+            ).hexdigest()
+            
+            if not hmac.compare_digest(signature, expected_sig):
+                return None
+            
+            return json.loads(session_json)
+        except:
+            return None</code></pre>
+                </div>
+
+                <h2 id="vulnerable-components">9. Using Components with Known Vulnerabilities</h2>
+                <p>
+                    Components such as libraries, frameworks, and other software modules run with 
+                    the same privileges as the application. If a vulnerable component is exploited, 
+                    such an attack can facilitate serious data loss or server takeover.
+                </p>
+
+                <h3>Component Security Best Practices</h3>
+                <ul>
+                    <li><strong>Inventory Management:</strong> Maintain a complete inventory of all components</li>
+                    <li><strong>Regular Updates:</strong> Keep all components up to date</li>
+                    <li><strong>Vulnerability Scanning:</strong> Regularly scan for known vulnerabilities</li>
+                    <li><strong>Security Monitoring:</strong> Monitor security advisories for your components</li>
+                    <li><strong>Remove Unused Components:</strong> Remove unnecessary dependencies</li>
+                </ul>
+
+                <h3>Automated Vulnerability Scanning</h3>
+                <div class="code-block-wrapper">
+                    <button class="copy-code-btn" onclick="copyCode(this)">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                    <pre data-language="bash"><code class="language-bash">
+// Python - Check for known vulnerabilities
+pip install safety
+safety check
+
+// Alternative: Use pip-audit
+pip install pip-audit
+pip-audit
+
+// Node.js - Check for vulnerabilities
+npm audit
+npm audit fix
+
+// Generate detailed report
+npm audit --json &gt; audit-report.json
+
+// Java - Use OWASP Dependency Check
+mvn org.owasp:dependency-check-maven:check
+
+// Docker - Scan container images
+docker run --rm -v $(pwd):/app clair-scanner:latest</code></pre>
+                </div>
+
+                <h3>Dependency Management Example</h3>
+                <div class="code-block-wrapper">
+                    <button class="copy-code-btn" onclick="copyCode(this)">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                    <pre data-language="yaml"><code class="language-yaml">
+// GitHub Actions - Automated dependency scanning
+name: Security Scan
+on: [push, pull_request]
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+// requirements.txt with version pinning
+Flask==2.3.2  /* Pin to specific secure version*/
+Werkzeug==2.3.4
+Jinja2==3.1.2
+// Avoid using outdated versions like Flask==1.0.0</code></pre>
+                </div>
+
+                <h2 id="insufficient-logging">10. Insufficient Logging &amp; Monitoring</h2>
+                <p>
+                    Insufficient logging and monitoring, coupled with missing or ineffective integration 
+                    with incident response, allows attackers to further attack systems, maintain persistence, 
+                    pivot to more systems, and tamper, extract, or destroy data.
+                </p>
+
+                <div class="alert alert-info">
+                    <strong>Detection Time:</strong> The average time to detect a breach is over 200 days. 
+                    Proper logging and monitoring can significantly reduce this time.
+                </div>
+
+                <h3>What to Log</h3>
+                <ul>
+                    <li><strong>Authentication Events:</strong> Login attempts, password changes</li>
+                    <li><strong>Authorization Failures:</strong> Access denied events</li>
+                    <li><strong>High-Value Transactions:</strong> Financial transactions, data exports</li>
+                    <li><strong>Security Events:</strong> Failed validation, suspicious patterns</li>
+                    <li><strong>System Events:</strong> Application start/stop, configuration changes</li>
+                </ul>
+
+                <h3>Secure Logging Implementation</h3>
+                <div class="code-block-wrapper">
+                    <button class="copy-code-btn" onclick="copyCode(this)">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                    <pre data-language="python"><code class="language-python">
+import logging
+import json
+from datetime import datetime
+from flask import request, g
+
+// Configure structured logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(message)s'
+)
+
+class SecurityLogger:
+    def __init__(self):
+        self.logger = logging.getLogger('security')
+        handler = logging.FileHandler('security.log')
+        handler.setFormatter(logging.Formatter('%(message)s'))
+        self.logger.addHandler(handler)
+    
+    def log_security_event(self, event_type, user_id=None, ip_address=None, 
+                          details=None, severity='INFO'):
+        log_entry = {
+            'timestamp': datetime.utcnow().isoformat(),
+            'event_type': event_type,
+            'user_id': user_id,
+            'ip_address': ip_address or request.remote_addr,
+            'user_agent': request.headers.get('User-Agent'),
+            'severity': severity,
+            'details': details
+        }
+        
+                self.logger.info(json.dumps(log_entry))
+
+// Usage examples
+security_logger = SecurityLogger()
+
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.json.get('username')
+    password = request.json.get('password')
+    
+    user = authenticate(username, password)
+    if user:
+        security_logger.log_security_event(
+            'LOGIN_SUCCESS',
+            user_id=user.id,
+            details={'username': username}
+        )
+        return jsonify({'status': 'success'})
+    else:
+        security_logger.log_security_event(
+            'LOGIN_FAILURE',
+            details={'username': username, 'reason': 'invalid_credentials'},
+            severity='WARNING'
+        )
+        return jsonify({'error': 'Invalid credentials'}), 401
+
+@app.route('/admin/users/&lt;int:user_id&gt;')
+@admin_required
+def get_user(user_id):
+    if not current_user.is_admin:
+        security_logger.log_security_event(
+            'UNAUTHORIZED_ACCESS_ATTEMPT',
+            user_id=current_user.id,
+            details={'attempted_resource': f'/admin/users/{user_id}'},
+            severity='HIGH'
+        )
+        abort(403)
+    
+    // Log high-privilege access
+    security_logger.log_security_event(
+        'ADMIN_ACCESS',
+        user_id=current_user.id,
+        details={'accessed_user': user_id}
+    )
+    
+    return jsonify(User.query.get(user_id).to_dict())</code></pre>
+                </div>
+
+                <h3>Log Analysis with ELK Stack</h3>
+                <div class="code-block-wrapper">
+                    <button class="copy-code-btn" onclick="copyCode(this)">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                    <pre data-language="yaml"><code class="language-yaml">
+// docker-compose.yml for ELK Stack
+version: '3.7'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.14.0
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.14.0
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
+// logstash.conf
+input {
+  file {
+    path =&gt; "/var/log/security.log"
+    start_position =&gt; "beginning"
+    codec =&gt; "json"
+  }
+}
+
+filter {
+  if [severity] == "HIGH" or [severity] == "CRITICAL" {
+    mutate {
+      add_tag =&gt; ["alert"]
+    }
+  }
+  
+  // Parse IP geolocation
+  geoip {
+    source =&gt; "ip_address"
+  }
+}
+
+output {
+  elasticsearch {
+    hosts =&gt; ["elasticsearch:9200"]
+    index =&gt; "security-logs-%{+YYYY.MM.dd}"
+  }
+}</code></pre>
+                </div>
+
+                <h3>Real-time Monitoring Alerts</h3>
+                <div class="code-block-wrapper">
+                    <button class="copy-code-btn" onclick="copyCode(this)">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                    <pre data-language="python"><code class="language-python">
+import smtplib
+from email.mime.text import MIMEText
+from collections import defaultdict
+from datetime import datetime, timedelta
+
+class SecurityMonitor:
+    def __init__(self):
+        self.failed_attempts = defaultdict(list)
+        self.alert_threshold = 5  *5 failed attempts
+        self.time_window = timedelta(minutes=10)
+    
+    def check_brute_force(self, ip_address, event_type):
+        if event_type == 'LOGIN_FAILURE':
+            now = datetime.utcnow()
+            
+            // Clean old attempts
+            self.failed_attempts[ip_address] = [
+                attempt for attempt in self.failed_attempts[ip_address]
+                if now - attempt &lt; self.time_window
+            ]
+            
+            // Add current attempt
+            self.failed_attempts[ip_address].append(now)
+            
+            // Check if threshold exceeded
+            if len(self.failed_attempts[ip_address]) &gt;= self.alert_threshold:
+                self.send_alert(
+                    f"Brute force attack detected from IP: {ip_address}",
+                    f"Multiple failed login attempts detected"
+                )
+                return True
+        return False
+    
+    def send_alert(self, subject, message):
+        // Send email alert
+        msg = MIMEText(message)
+        msg['Subject'] = f"[SECURITY ALERT] {subject}"
+        msg['From'] = 'security@yourcompany.com'
+        msg['To'] = 'admin@yourcompany.com'
+        
+        // Also log the alert
+        security_logger.log_security_event(
+            'SECURITY_ALERT_SENT',
+            details={'subject': subject, 'message': message},
+            severity='CRITICAL'
+        )
+
+// Integration with Flask app
+monitor = SecurityMonitor()
+
+@app.after_request
+def security_monitoring(response):
+    if hasattr(g, 'security_event'):
+        event = g.security_event
+        monitor.check_brute_force(
+            request.remote_addr, 
+            event.get('event_type')
+        )
+    return response</code></pre>
                 </div>
                     
                 <div class="alert alert-success">
-                    <strong>Success!</strong> By reading this article, you've learned the first 4 
-                    items of the OWASP Top 10. Security is a field that requires continuous learning.
+                    <strong>Congratulations!</strong> You've now learned all 10 items of the OWASP Top 10. 
+                    These security principles form the foundation of secure web application development. 
+                    Remember: security is not a feature to be added later, but a mindset to be maintained throughout development.
                 </div>
+
+                <h3>Summary and Next Steps</h3>
+                <p>
+                    The OWASP Top 10 represents the most critical web application security risks. 
+                    As a security professional, you should:
+                </p>
+                <ul>
+                    <li><strong>Stay Updated:</strong> OWASP Top 10 is updated every 3-4 years</li>
+                    <li><strong>Implement Defense in Depth:</strong> Use multiple layers of security</li>
+                    <li><strong>Security Testing:</strong> Regular penetration testing and code reviews</li>
+                    <li><strong>Developer Training:</strong> Educate development teams on secure coding</li>
+                    <li><strong>Incident Response:</strong> Have a plan ready for when attacks happen</li>
+                </ul>
+
+                <blockquote>
+                    "Security is a process, not a product. It's about good practices, awareness, 
+                    and continuous improvement." - Bruce Schneier
+                </blockquote>
             </div>
 
             <!-- Post Footer -->
@@ -298,16 +981,17 @@ def parse_json_safely(json_string):
                     <a href="#" class="tag">#WebSecurity</a>
                     <a href="#" class="tag">#PenTest</a>
                     <a href="#" class="tag">#SecurityBestPractices</a>
+                    <a href="#" class="tag">#VulnerabilityAssessment</a>
                 </div>
             </div>
 
             <!-- Share Section -->
             <div class="share-section">
                 <div>
-                    <strong>If this article was helpful, please share it:</strong>
+                    <strong>If this comprehensive guide was helpful, please share it:</strong>
                 </div>
                 <div class="share-buttons">
-                    <a href="https://twitter.com/intent/tweet?text=OWASP%20Top%2010%20-%20Web%20Application%20Security&url=https://blog.pixrei.xyz/posts/owasp-10.html" 
+                    <a href="https://twitter.com/intent/tweet?text=Complete%20OWASP%20Top%2010%20Guide%20-%20Web%20Application%20Security&url=https://blog.pixrei.xyz/posts/owasp-10.html" 
                        target="_blank" class="share-btn" title="Share on Twitter">
                         <i class="fab fa-twitter"></i>
                     </a>
@@ -319,7 +1003,7 @@ def parse_json_safely(json_string):
                        target="_blank" class="share-btn" title="Share on Facebook">
                         <i class="fab fa-facebook"></i>
                     </a>
-                    <a href="mailto:?subject=OWASP%20Top%2010&body=You%20should%20read%20this:%20https://blog.pixrei.xyz/posts/owasp-10.html" 
+                    <a href="mailto:?subject=Complete%20OWASP%20Top%2010%20Guide&body=Check%20out%20this%20comprehensive%20guide:%20https://blog.pixrei.xyz/posts/owasp-10.html" 
                        class="share-btn" title="Send via Email">
                         <i class="fas fa-envelope"></i>
                     </a>
@@ -337,6 +1021,8 @@ def parse_json_safely(json_string):
                         I'm developing myself as a Penetration Tester and Red Team member. 
                         While gaining new experiences in web application security, network security, 
                         and cloud security topics, I actively solve CTFs on TryHackMe and HackTheBox platforms.
+                        This comprehensive OWASP Top 10 guide is part of my effort to share knowledge and help 
+                        the cybersecurity community build more secure applications.
                     </p>
                     <div class="author-social">
                         <a href="https://github.com/Ege-Sumer" target="_blank" class="share-btn">
@@ -367,21 +1053,21 @@ def parse_json_safely(json_string):
 
         <!-- Related Posts -->
         <section class="related-posts">
-            <h3>Related Articles</h3>
+            <h3>Related Security Articles</h3>
             <div class="related-grid">
                 <a href="web-security-basics.html" class="related-card">
                     <h4>Web Security Fundamentals</h4>
-                    <p>Essential topics you need to know for web application security...</p>
-                    <span class="read-time"><i class="far fa-clock"></i> 5 min read</span>
-                </a>
-                                <a href="sql-injection-deep-dive.html" class="related-card">
-                    <h4>SQL Injection Deep Dive</h4>
-                    <p>Detailed analysis of SQL Injection attacks and protection methods...</p>
+                    <p>Essential security concepts every developer should know...</p>
                     <span class="read-time"><i class="far fa-clock"></i> 8 min read</span>
                 </a>
+                <a href="sql-injection-deep-dive.html" class="related-card">
+                    <h4>SQL Injection Deep Dive</h4>
+                    <p>Advanced SQL injection techniques and prevention methods...</p>
+                    <span class="read-time"><i class="far fa-clock"></i> 12 min read</span>
+                </a>
                 <a href="security-headers.html" class="related-card">
-                    <h4>Security Headers Guide</h4>
-                    <p>HTTP headers that make your web applications secure...</p>
+                    <h4>Security Headers Complete Guide</h4>
+                    <p>HTTP security headers that protect your web applications...</p>
                     <span class="read-time"><i class="far fa-clock"></i> 6 min read</span>
                 </a>
             </div>
@@ -389,7 +1075,7 @@ def parse_json_safely(json_string):
 
         <!-- Comments Section -->
         <section class="comments-section">
-            <h3>Comments</h3>
+            <h3>Comments &amp; Discussion</h3>
             
             <!-- Comment Form -->
             <form class="comment-form" id="commentForm">
@@ -403,7 +1089,7 @@ def parse_json_safely(json_string):
                 </div>
                 <div class="form-group">
                     <label for="commentText">Comment</label>
-                    <textarea id="commentText" placeholder="Write your comment..." required></textarea>
+                    <textarea id="commentText" placeholder="Share your thoughts on this OWASP Top 10 guide..." required></textarea>
                 </div>
                 <button type="submit">Submit Comment</button>
             </form>
@@ -416,15 +1102,15 @@ def parse_json_safely(json_string):
                             <div class="comment-avatar">
                                 <i class="fas fa-user"></i>
                             </div>
-                            <strong>John Smith</strong>
+                            <strong>Sarah Johnson</strong>
                         </div>
-                        <span class="comment-date">2 days ago</span>
+                        <span class="comment-date">3 days ago</span>
                     </div>
                     <div class="comment-content">
                         <p>
-                            Very useful article, especially the SQL Injection examples 
-                            are very explanatory. I understood the NoSQL injection topic 
-                            so clearly for the first time. Thank you!
+                            Excellent comprehensive guide! The code examples are particularly helpful. 
+                            I've bookmarked this for reference during our security code reviews. 
+                            The logging section (#10) is often overlooked but so important.
                         </p>
                     </div>
                 </div>
@@ -435,14 +1121,34 @@ def parse_json_safely(json_string):
                             <div class="comment-avatar">
                                 <i class="fas fa-user"></i>
                             </div>
-                            <strong>Alice Johnson</strong>
+                            <strong>Mike Chen</strong>
                         </div>
-                        <span class="comment-date">5 days ago</span>
+                        <span class="comment-date">1 week ago</span>
                     </div>
                     <div class="comment-content">
                         <p>
-                            Will there be an article series covering the remaining items 
-                            of the OWASP Top 10? I'm also curious about XSS and CSRF topics.
+                            Great work on covering all 10 vulnerabilities with practical examples. 
+                            The Broken Access Control section really helped me understand IDOR attacks better. 
+                            Would love to see a follow-up on OWASP API Security Top 10!
+                        </p>
+                    </div>
+                </div>
+
+                <div class="comment">
+                    <div class="comment-header">
+                        <div class="comment-author">
+                            <div class="comment-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <strong>DevSecOps Engineer</strong>
+                        </div>
+                        <span class="comment-date">2 weeks ago</span>
+                    </div>
+                    <div class="comment-content">
+                        <p>
+                                                        This is now our team's go-to reference for secure coding practices. 
+                            The Docker security scanning commands in the components section are gold. 
+                            Thanks for putting together such a thorough resource!
                         </p>
                     </div>
                 </div>
@@ -455,6 +1161,8 @@ def parse_json_safely(json_string):
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-xml-doc.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
     <script src="/blog/post-script.js"></script>
 </body>
 </html>
