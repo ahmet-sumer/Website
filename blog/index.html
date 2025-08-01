@@ -32,19 +32,42 @@
         </div>
 
         <ul class="nav-menu">
-            <li><a href="#home" class="nav-link active"><i class="fas fa-home"></i>Main Page</a></li>
-            <li><a href="#security" class="nav-link"><i class="fas fa-shield-alt"></i> Security</a></li>
-            <li><a href="#ctf" class="nav-link"><i class="fas fa-flag"></i> CTF Writeups</a></li>
-            <li><a href="#tools" class="nav-link"><i class="fas fa-tools"></i> Tools</a></li>
-            <li><a href="#tutorials" class="nav-link"><i class="fas fa-graduation-cap"></i> Tutorials</a></li>
-            <li><a href="#About" class="nav-link"><i class="fas fa-user"></i> About</a></li>
-            <li><a href="#Contact" class="nav-link"><i class="fas fa-envelope"></i> Contact</a></li>
+            <li>
+                <a href="#" class="nav-link active" data-filter="all">
+                    <i class="fas fa-home"></i>All Posts
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-filter="security">
+                    <i class="fas fa-shield-alt"></i>Security
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-filter="tools">
+                    <i class="fas fa-tools"></i>Tools
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-filter="pentest">
+                    <i class="fas fa-user-secret"></i>PenTest
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-filter="ctf">
+                    <i class="fas fa-flag"></i>CTF
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-filter="tutorial">
+                    <i class="fas fa-graduation-cap"></i>Tutorial
+                </a>
+            </li>
         </ul>
 
         <div class="social-links">
             <a href="https://www.github.com/Ege-Sumer" target="_blank"><i class="fab fa-github"></i></a>
             <a href="https://www.linkedin.com/in/ahmet-ege-sümer" target="_blank"><i class="fab fa-linkedin"></i></a>
-            <a href="https://www.instagram.com/pixrei.xyz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.instagram.com/pixrei.xyz" target="_blank"><i class="fab fa-instagram"></i></a>
         </div>
     </nav>
 
@@ -67,14 +90,22 @@
 
         <!-- Search Bar -->
         <div class="search-container">
-            <input type="text" placeholder="Search blog posts..." class="search-input">
-            <button class="search-btn"><i class="fas fa-search"></i></button>
+            <input type="text" placeholder="Search blog posts..." class="search-input" id="searchInput">
+            <button class="search-btn" id="searchBtn"><i class="fas fa-search"></i></button>
+        </div>
+
+        <!-- Filter Results Info -->
+        <div class="filter-info" id="filterInfo">
+            <span id="resultCount">8 posts found</span>
+            <button class="clear-filters" id="clearFilters" style="display: none;">
+                <i class="fas fa-times"></i> Clear Filters
+            </button>
         </div>
 
         <!-- Blog Posts -->
         <section class="blog-posts" id="blogPosts">
-            <!-- Blog Post 1 -->
-            <article class="blog-card" data-category="security">
+            <!-- Security Posts -->
+            <article class="blog-card" data-category="security" data-tags="owasp websecurity pentest security">
                 <div class="post-meta">
                     <span class="category">Security</span>
                     <span class="date">2025</span>
@@ -92,62 +123,27 @@
                 <a href="/blog/Security/owasp-10.html" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
             </article>
 
-            <!-- Blog Post 2 -->
-            <article class="blog-card" data-category="ctf">
+            <!-- PenTest Posts -->
+            <article class="blog-card" data-category="pentest" data-tags="pentest methodology security testing">
                 <div class="post-meta">
-                    <span class="category">CTF</span>
+                    <span class="category">PenTest</span>
                     <span class="date">2025</span>
                 </div>
-                <h2 class="post-title">HackTheBox - Fluffy Machine Walkthrough</h2>
+                <h2 class="post-title">Complete Penetration Testing Methodology</h2>
                 <p class="post-excerpt">
-                    Detailed walkthrough of Fluffy, one of HTB's Easy level machines. 
-                    The entire process from initial foothold to root in detail...
+                    A comprehensive guide to penetration testing methodology, from reconnaissance 
+                    to post-exploitation and reporting...
                 </p>
                 <div class="post-tags">
-                    <span class="tag">#HackTheBox</span>
-                    <span class="tag">#CTF</span>
-                    <span class="tag">#Linux</span>
+                    <span class="tag">#PenTest</span>
+                    <span class="tag">#Methodology</span>
+                    <span class="tag">#Security</span>
                 </div>
                 <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
             </article>
-            
-            <article class="blog-card" data-category="ctf">
-                <div class="post-meta">
-                    <span class="category">CTF</span>
-                    <span class="date">2025</span>
-                </div>
-                <h2 class="post-title">HackTheBox - Dog Machine Walkthrough</h2>
-                <p class="post-excerpt">
-                    Detailed walkthrough of Dog, one of HTB's Easy level machines. 
-                    The entire process from initial foothold to root in detail...
-                </p>
-                <div class="post-tags">
-                    <span class="tag">#HackTheBox</span>
-                    <span class="tag">#CTF</span>
-                    <span class="tag">#Linux</span>
-                </div>
-                <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
-            </article>
-            
-            <article class="blog-card" data-category="ctf">
-                <div class="post-meta">
-                    <span class="category">CTF</span>
-                    <span class="date">2025</span>
-                </div>
-                <h2 class="post-title">HackTheBox - LinkVortex Machine Walkthrough</h2>
-                <p class="post-excerpt">
-                    Detailed walkthrough of LinkVortex, one of HTB's Easy level machines. 
-                    The entire process from initial foothold to root in detail...
-                </p>
-                <div class="post-tags">
-                    <span class="tag">#HackTheBox</span>
-                    <span class="tag">#CTF</span>
-                    <span class="tag">#Linux</span>
-                </div>
-                <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
-            </article>
-            
-            <article class="blog-card" data-category="ctf">
+
+            <!-- CTF Posts -->
+            <article class="blog-card" data-category="ctf" data-tags="hackthebox ctf linux walkthrough">
                 <div class="post-meta">
                     <span class="category">CTF</span>
                     <span class="date">2025</span>
@@ -164,8 +160,44 @@
                 </div>
                 <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
             </article>
-            
-            <article class="blog-card" data-category="ctf">
+
+            <article class="blog-card" data-category="ctf" data-tags="hackthebox ctf linux walkthrough">
+                <div class="post-meta">
+                    <span class="category">CTF</span>
+                    <span class="date">2025</span>
+                </div>
+                <h2 class="post-title">HackTheBox - Fluffy Machine Walkthrough</h2>
+                <p class="post-excerpt">
+                    Detailed walkthrough of Fluffy, one of HTB's Easy level machines. 
+                    The entire process from initial foothold to root in detail...
+                </p>
+                <div class="post-tags">
+                    <span class="tag">#HackTheBox</span>
+                    <span class="tag">#CTF</span>
+                    <span class="tag">#Linux</span>
+                </div>
+                <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+            </article>
+
+            <article class="blog-card" data-category="ctf" data-tags="hackthebox ctf linux walkthrough">
+                <div class="post-meta">
+                    <span class="category">CTF</span>
+                    <span class="date">2025</span>
+                </div>
+                <h2 class="post-title">HackTheBox - LinkVortex Machine Walkthrough</h2>
+                <p class="post-excerpt">
+                    Detailed walkthrough of LinkVortex, one of HTB's Easy level machines. 
+                    The entire process from initial foothold to root in detail...
+                </p>
+                <div class="post-tags">
+                    <span class="tag">#HackTheBox</span>
+                    <span class="tag">#CTF</span>
+                    <span class="tag">#Linux</span>
+                </div>
+                <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+            </article>
+
+            <article class="blog-card" data-category="ctf" data-tags="hackthebox ctf windows walkthrough">
                 <div class="post-meta">
                     <span class="category">CTF</span>
                     <span class="date">2025</span>
@@ -178,13 +210,13 @@
                 <div class="post-tags">
                     <span class="tag">#HackTheBox</span>
                     <span class="tag">#CTF</span>
-                    <span class="tag">#Linux</span>
+                    <span class="tag">#Windows</span>
                 </div>
                 <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
             </article>
 
-            <!-- Blog Post 3 -->
-            <article class="blog-card" data-category="tools">
+            <!-- Tools Posts -->
+            <article class="blog-card" data-category="tools" data-tags="burpsuite tools webpentest extensions">
                 <div class="post-meta">
                     <span class="category">Tools</span>
                     <span class="date">2025</span>
@@ -202,8 +234,8 @@
                 <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
             </article>
 
-            <!-- Blog Post 4 -->
-            <article class="blog-card" data-category="tutorials">
+            <!-- Tutorial Posts -->
+            <article class="blog-card" data-category="tutorial" data-tags="python coding networksecurity tutorial">
                 <div class="post-meta">
                     <span class="category">Tutorial</span>
                     <span class="date">2025</span>
@@ -222,12 +254,19 @@
             </article>
         </section>
 
+        <!-- No Results Message -->
+        <div class="no-results" id="noResults" style="display: none;">
+            <i class="fas fa-search"></i>
+            <h3>No posts found</h3>
+            <p>Try adjusting your search or filters</p>
+        </div>
+
         <!-- Pagination -->
-        <div class="pagination">
+        <div class="pagination" id="pagination">
             <button class="page-btn prev-btn" id="prevBtn">
                 <i class="fas fa-chevron-left"></i>
             </button>
-            <span id="pageInfo">1 / 3</span>
+            <span id="pageInfo">1 / 2</span>
             <button class="page-btn next-btn" id="nextBtn">
                 <i class="fas fa-chevron-right"></i>
             </button>
