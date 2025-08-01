@@ -1,406 +1,447 @@
-// DOM Elements
-const sidebar = document.getElementById('sidebar');
-const menuToggle = document.getElementById('menuToggle');
-const closeSidebar = document.getElementById('closeSidebar');
-const navLinks = document.querySelectorAll('.nav-link');
-const blogPosts = document.getElementById('blogPosts');
-
-// THEME TOGGLE - YENİ EKLENEN KISIM
-const themeToggle = document.getElementById('themeToggle');
-const mobileThemeToggle = document.getElementById('mobileThemeToggle');
-const themeIcon = document.getElementById('themeIcon');
-const mobileThemeIcon = document.getElementById('mobileThemeIcon');
-
-// Theme başlatma
-document.addEventListener('DOMContentLoaded', function() {
-    // Kaydedilmiş temayı yükle veya varsayılan olarak dark kullan
-    const savedTheme = localStorage.getItem('pixrei-theme') || 'dark';
-    setTheme(savedTheme);
-    
-    // Mevcut kodlarınız...
-    collectExistingPosts();
-    showPage(1);
-    
-    // Pagination butonları
-    document.getElementById('prevBtn').addEventListener('click', () => {
-        if (currentPage > 1) {
-            currentPage--;
-            showPage(currentPage);
-        }
-    });
-    
-    document.getElementById('nextBtn').addEventListener('click', () => {
-        const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
-        if (currentPage < totalPages) {
-            currentPage++;
-            showPage(currentPage);
-        }
-    });
-});
-
-// Theme değiştirme fonksiyonu
-function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-}
-
-// Tema ayarlama fonksiyonu
-function setTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('pixrei-theme', theme);
-    updateThemeIcons(theme);
-    
-    // Smooth geçiş efekti
-    document.body.style.transition = 'all 0.3s ease';
-    setTimeout(() => {
-        document.body.style.transition = '';
-    }, 300);
-}
-
-// Theme ikonlarını güncelle
-function updateThemeIcons(theme) {
-    const iconClass = theme === 'dark' ? 'fa-sun' : 'fa-moon';
-    
-    if (themeIcon) {
-        themeIcon.className = `fas ${iconClass}`;
-    }
-    
-    if (mobileThemeIcon) {
-        mobileThemeIcon.className = `fas ${iconClass}`;
-    }
-}
-
-// Theme toggle butonları için event listener
-if (themeToggle) {
-    themeToggle.addEventListener('click', toggleTheme);
-}
-
-if (mobileThemeToggle) {
-    mobileThemeToggle.addEventListener('click', toggleTheme);
-}
-
-// Klavye kısayolu - T tuşu ile tema değiştirme
-document.addEventListener('keydown', (e) => {
-    if (e.key === 't' || e.key === 'T') {
-        if (!document.activeElement.matches('input, textarea')) {
-            toggleTheme();
-        }
-    }
-});
-// THEME TOGGLE SONU
-
-// Toggle Sidebar
-menuToggle.addEventListener('click', () => {
-    sidebar.classList.add('active');
-});
-
-closeSidebar.addEventListener('click', () => {
-    sidebar.classList.remove('active');
-});
-
-// Close sidebar when clicking outside on mobile
-document.addEventListener('click', (e) => {
-    if (window.innerWidth <= 1024) {
-        if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
-            sidebar.classList.remove('active');
-        }
-    }
-});
-
-// Active Navigation
-navLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-        e.preventDefault();
-        
-        // Remove active class from all links
-        navLinks.forEach(l => l.classList.remove('active'));
-        
-        // Add active class to clicked link
-        link.classList.add('active');
-        
-        // Close sidebar on mobile after clicking
-        if (window.innerWidth <= 1024) {
-            sidebar.classList.remove('active');
-        }
-        
-        // Filter posts based on category (you can expand this)
-        const category = link.textContent.trim();
-        filterPosts(category);
-    });
-});
-
-const blogData = [
-    {
-        category: 'Security',
-        date: '15 Aralık 2024',
-        title: 'OWASP Top 10: Web Application Security Riskleri',
-        excerpt: 'Modern web uygulamalarında en sık karşılaşılan güvenlik açıklarını ve bunlara karşı alınabilecek önlemleri detaylı olarak inceliyoruz...',
-        tags: ['#OWASP', '#WebSecurity', '#PenTest']
-    },
-    {
-        category: 'CTF',
-        date: '10 Aralık 2024',
-        title: 'HackTheBox - Keeper Makinesi Çözümü',
-        excerpt: 'HTB\'nin popüler makinelerinden Keeper\'ın detaylı çözüm adımları. Initial foothold\'dan root\'a kadar tüm süreci açıklıyorum...',
-        tags: ['#HackTheBox', '#CTF', '#Linux']
-    },
-    {
-        category: 'Tools',
-        date: '5 Aralık 2024',
-        title: 'Burp Suite Extensions: En Kullanışlı 10 Eklenti',
-        excerpt: 'Web application penetration testing\'de işinizi kolaylaştıracak en iyi Burp Suite eklentilerini ve kullanım örneklerini paylaşıyorum...',
-        tags: ['#BurpSuite', '#Tools', '#WebPentest']
-    },
-    {
-        category: 'Tutorial',
-        date: '1 Aralık 2024',
-        title: 'Python ile Basit Port Scanner Yazımı',
-        excerpt: 'Sıfırdan Python kullanarak nasıl port scanner yazabileceğinizi, socket programlama temellerini öğrenerek anlatıyorum...',
-        tags: ['#Python', '#Coding', '#NetworkSecurity']
-    }
-];
-
-// Filter posts function
-function filterPosts(category) {
-    // This is a simple example - you can expand it
-    console.log(`Filtering posts for category: ${category}`);
-    // Implement actual filtering logic here
-}
-
-// Search functionality
-const searchInput = document.querySelector('.search-input');
-const searchBtn = document.querySelector('.search-btn');
-
-searchBtn.addEventListener('click', performSearch);
-searchInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        performSearch();
-    }
-});
-
-function performSearch() {
-    const searchTerm = searchInput.value.toLowerCase();
-    const posts = document.querySelectorAll('.blog-card');
-    
-    posts.forEach(post => {
-        const title = post.querySelector('.post-title').textContent.toLowerCase();
-        const excerpt = post.querySelector('.post-excerpt').textContent.toLowerCase();
-        const tags = Array.from(post.querySelectorAll('.tag')).map(tag => tag.textContent.toLowerCase());
-        
-        if (title.includes(searchTerm) || excerpt.includes(searchTerm) || tags.some(tag => tag.includes(searchTerm))) {
-            post.style.display = 'block';
-        } else {
-            post.style.display = 'none';
-        }
-    });
-}
-
-// Pagination
-const pageButtons = document.querySelectorAll('.page-btn');
-
-pageButtons.forEach(btn => {
-    btn.addEventListener('click', function() {
-        // Remove active class from all buttons
-        pageButtons.forEach(b => b.classList.remove('active'));
-        
-        // Add active class to clicked button
-        this.classList.add('active');
-        
-        // Load new posts (implement actual pagination logic)
-        loadPage(this.textContent);
-    });
-});
-
-function loadPage(pageNumber) {
-    console.log(`Loading page ${pageNumber}`);
-    // Implement actual pagination logic here
-}
-
-// Add smooth scrolling
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-});
-
-// Dynamic content loading simulation
-function createBlogPost(data) {
-    return `
-        <article class="blog-card">
-            <div class="post-meta">
-                <span class="category">${data.category}</span>
-                <span class="date">${data.date}</span>
-            </div>
-            <h2 class="post-title">${data.title}</h2>
-            <p class="post-excerpt">${data.excerpt}</p>
-            <div class="post-tags">
-                ${data.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-            </div>
-            <a href="#" class="read-more">Devamını Oku <i class="fas fa-arrow-right"></i></a>
-        </article>
-    `;
-}
-
-function copyCode(button) {
-    // Button'ın bulunduğu wrapper'ı bul
-    const wrapper = button.closest('.code-block-wrapper');
-    
-    // Wrapper içindeki code elementini bul
-    const codeElement = wrapper.querySelector('pre code');
-    
-    if (!codeElement) {
-        console.error('Kod elementi bulunamadı');
-        return;
-    }
-    
-    // Kodu al (trim ile başındaki/sonundaki boşlukları temizle)
-    const code = codeElement.textContent.trim();
-    
-    // Kopyalama işlemi
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(code)
-            .then(() => {
-                // Başarılı mesajı
-                const originalHTML = button.innerHTML;
-                button.innerHTML = '<i class="fas fa-check"></i> Kopyalandı!';
-                button.style.backgroundColor = '#4CAF50';
-                button.style.color = 'white';
-                
-                // 2 saniye sonra eski haline döndür
-                setTimeout(() => {
-                    button.innerHTML = originalHTML;
-                    button.style.backgroundColor = '';
-                    button.style.color = '';
-                }, 2000);
-            })
-            .catch(err => {
-                console.error('Kopyalama hatası:', err);
-                fallbackCopy(code);
-            });
-    } else {
-        // Eski tarayıcılar için
-        fallbackCopy(code);
-    }
-}
-
-// Alternatif kopyalama metodu
-function fallbackCopy(text) {
-    const textArea = document.createElement("textarea");
-    textArea.value = text;
-    textArea.style.position = "fixed";
-    textArea.style.left = "-999999px";
-    textArea.style.top = "-999999px";
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-    
-    try {
-        const successful = document.execCommand('copy');
-        if (successful) {
-            // Geçici bildirim göster
-            showNotification('Kopyalandı!');
-        } else {
-            alert('Kopyalama başarısız');
-        }
-    } catch (err) {
-        console.error('Fallback kopyalama hatası:', err);
-        alert('Kopyalama başarısız. Lütfen manuel olarak kopyalayın.');
-    }
-    
-    document.body.removeChild(textArea);
-}
-
-// Opsiyonel: Bildirim gösterme fonksiyonu
-function showNotification(message) {
-    const notification = document.createElement('div');
-    notification.textContent = message;
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: #4CAF50;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 4px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        z-index: 10000;
-        animation: slideIn 0.3s ease;
-    `;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 300);
-    }, 2000);
-}
-
-// Mevcut kodlarınızın EN ÜSTÜNE bunları ekleyin
+// Global Variables
 let currentPage = 1;
 const postsPerPage = 4;
 let allPosts = [];
 let filteredPosts = [];
+let activeFilter = 'all';
+let searchTerm = '';
 
-// Mevcut HTML'deki blog kartlarını topla
+// DOM Elements
+let sidebar, menuToggle, closeSidebar, navLinks, blogPosts;
+let searchInput, searchBtn, filterInfo, resultCount, clearFilters;
+let noResults, pagination, themeToggle, mobileThemeToggle;
+let themeIcon, mobileThemeIcon;
+
+// Safe DOM element getter
+function safeGetElement(id) {
+    try {
+        return document.getElementById(id);
+    } catch (error) {
+        console.warn(`Element with id '${id}' not found`);
+        return null;
+    }
+}
+
+function safeGetElements(selector) {
+    try {
+        return document.querySelectorAll(selector);
+    } catch (error) {
+        console.warn(`Elements with selector '${selector}' not found`);
+        return [];
+    }
+}
+
+// Initialize DOM elements safely
+function initializeElements() {
+    sidebar = safeGetElement('sidebar');
+    menuToggle = safeGetElement('menuToggle');
+    closeSidebar = safeGetElement('closeSidebar');
+    navLinks = safeGetElements('.nav-link');
+    blogPosts = safeGetElement('blogPosts');
+    searchInput = safeGetElement('searchInput');
+    searchBtn = safeGetElement('searchBtn');
+    filterInfo = safeGetElement('filterInfo');
+    resultCount = safeGetElement('resultCount');
+    clearFilters = safeGetElement('clearFilters');
+    noResults = safeGetElement('noResults');
+    pagination = safeGetElement('pagination');
+    themeToggle = safeGetElement('themeToggle');
+    mobileThemeToggle = safeGetElement('mobileThemeToggle');
+    themeIcon = safeGetElement('themeIcon');
+    mobileThemeIcon = safeGetElement('mobileThemeIcon');
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        console.log('DOM loaded, initializing...');
+        initializeElements();
+        initializeTheme();
+        initializeBlog();
+        bindEvents();
+        console.log('Initialization complete');
+    } catch (error) {
+        console.error('Initialization error:', error);
+    }
+});
+
+// ===== THEME MANAGEMENT =====
+function initializeTheme() {
+    try {
+        const savedTheme = localStorage.getItem('pixrei-theme') || 'dark';
+        setTheme(savedTheme);
+    } catch (error) {
+        console.warn('Theme initialization error:', error);
+        setTheme('dark');
+    }
+}
+
+function toggleTheme() {
+    try {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+    } catch (error) {
+        console.error('Theme toggle error:', error);
+    }
+}
+
+function setTheme(theme) {
+    try {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('pixrei-theme', theme);
+        updateThemeIcons(theme);
+        
+        document.body.style.transition = 'all 0.3s ease';
+        setTimeout(() => {
+            document.body.style.transition = '';
+        }, 300);
+    } catch (error) {
+        console.error('Set theme error:', error);
+    }
+}
+
+function updateThemeIcons(theme) {
+    try {
+        const iconClass = theme === 'dark' ? 'fa-sun' : 'fa-moon';
+        
+        if (themeIcon) themeIcon.className = `fas ${iconClass}`;
+        if (mobileThemeIcon) mobileThemeIcon.className = `fas ${iconClass}`;
+    } catch (error) {
+        console.warn('Theme icon update error:', error);
+    }
+}
+
+// ===== BLOG INITIALIZATION =====
+function initializeBlog() {
+    try {
+        collectExistingPosts();
+        filterAndShowPosts();
+    } catch (error) {
+        console.error('Blog initialization error:', error);
+    }
+}
+
 function collectExistingPosts() {
-    const existingCards = document.querySelectorAll('.blog-card');
-    
-    existingCards.forEach(card => {
-        const postData = {
-            html: card.outerHTML,
-            category: card.getAttribute('data-category')
-        };
-        allPosts.push(postData);
-    });
-    
-    // Başlangıçta tüm postları göster
-    filteredPosts = [...allPosts];
+    try {
+        const existingCards = safeGetElements('.blog-card');
+        allPosts = [];
+        
+        existingCards.forEach((card, index) => {
+            if (card) {
+                const postData = {
+                    element: card,
+                    category: card.getAttribute('data-category') || 'uncategorized',
+                    tags: card.getAttribute('data-tags') || '',
+                    title: card.querySelector('.post-title')?.textContent?.toLowerCase() || '',
+                    excerpt: card.querySelector('.post-excerpt')?.textContent?.toLowerCase() || '',
+                    html: card.outerHTML,
+                    index: index
+                };
+                allPosts.push(postData);
+            }
+        });
+        
+        console.log(`Collected ${allPosts.length} posts`);
+    } catch (error) {
+        console.error('Post collection error:', error);
+        allPosts = [];
+    }
 }
 
-// Belirli bir sayfayı göster  
+// ===== FILTERING SYSTEM =====
+function filterPosts(category) {
+    try {
+        console.log(`Filtering posts for category: ${category}`);
+        activeFilter = category;
+        searchTerm = '';
+        
+        if (searchInput) searchInput.value = '';
+        
+        updateActiveNavLink(category);
+        filterAndShowPosts();
+    } catch (error) {
+        console.error('Filter posts error:', error);
+    }
+}
+
+function filterAndShowPosts() {
+    try {
+        console.log(`Applying filters - Category: ${activeFilter}, Search: "${searchTerm}"`);
+        
+        filteredPosts = allPosts.filter(post => {
+            try {
+                const categoryMatch = activeFilter === 'all' || 
+                                    post.category.toLowerCase() === activeFilter.toLowerCase();
+                
+                const searchMatch = searchTerm === '' || 
+                                  post.title.includes(searchTerm.toLowerCase()) ||
+                                  post.excerpt.includes(searchTerm.toLowerCase()) ||
+                                  post.tags.toLowerCase().includes(searchTerm.toLowerCase());
+                
+                return categoryMatch && searchMatch;
+            } catch (error) {
+                console.warn('Post filter error:', error);
+                return false;
+            }
+        });
+        
+        console.log(`Filtered to ${filteredPosts.length} posts`);
+        
+        currentPage = 1;
+        showPage(currentPage);
+        updateFilterInfo();
+    } catch (error) {
+        console.error('Filter and show posts error:', error);
+    }
+}
+
+function updateActiveNavLink(category) {
+    try {
+        navLinks.forEach(link => {
+            if (link) {
+                link.classList.remove('active');
+                if (link.getAttribute('data-filter') === category) {
+                    link.classList.add('active');
+                }
+            }
+        });
+    } catch (error) {
+        console.warn('Active nav link update error:', error);
+    }
+}
+
+// ===== SEARCH FUNCTIONALITY =====
+function performSearch() {
+    try {
+        searchTerm = searchInput ? searchInput.value.trim() : '';
+        console.log(`Searching for: "${searchTerm}"`);
+        filterAndShowPosts();
+        
+        if ((searchTerm || activeFilter !== 'all') && clearFilters) {
+            clearFilters.style.display = 'inline-block';
+        }
+    } catch (error) {
+        console.error('Search error:', error);
+    }
+}
+
+function clearAllFilters() {
+    try {
+        console.log('Clearing all filters');
+        activeFilter = 'all';
+        searchTerm = '';
+        
+        if (searchInput) searchInput.value = '';
+        
+        navLinks.forEach(link => {
+            if (link) link.classList.remove('active');
+        });
+        
+        const allLink = document.querySelector('[data-filter="all"]');
+        if (allLink) allLink.classList.add('active');
+        
+        if (clearFilters) clearFilters.style.display = 'none';
+        filterAndShowPosts();
+    } catch (error) {
+        console.error('Clear filters error:', error);
+    }
+}
+
+// ===== PAGINATION =====
 function showPage(page) {
-    const container = document.getElementById('blogPosts');
-    const start = (page - 1) * postsPerPage;
-    const end = start + postsPerPage;
-    const postsToShow = filteredPosts.slice(start, end);
-    
-    // Container'ı temizle
-    container.innerHTML = '';
-    
-    // Seçilen postları göster
-    postsToShow.forEach(post => {
-        container.innerHTML += post.html;
-    });
-    
-    // Sayfa bilgisini güncelle
-    updatePaginationInfo();
-    
-    // Sayfanın en üstüne git
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    try {
+        console.log(`Showing page ${page}`);
+        
+        const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+        const start = (page - 1) * postsPerPage;
+        const end = start + postsPerPage;
+        const postsToShow = filteredPosts.slice(start, end);
+        
+        if (blogPosts) {
+            blogPosts.innerHTML = '';
+            
+            if (postsToShow.length === 0) {
+                if (noResults) noResults.style.display = 'block';
+                if (pagination) pagination.style.display = 'none';
+            } else {
+                if (noResults) noResults.style.display = 'none';
+                if (pagination) pagination.style.display = 'flex';
+                
+                postsToShow.forEach(post => {
+                    blogPosts.innerHTML += post.html;
+                });
+            }
+        }
+        
+        updatePaginationInfo();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+        console.error('Show page error:', error);
+    }
 }
 
-// Pagination bilgilerini güncelle
 function updatePaginationInfo() {
-    const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
-    
-    // Sayfa bilgisi
-    document.getElementById('pageInfo').textContent = `${currentPage} / ${totalPages}`;
-    
-    // Butonları aktif/pasif yap
-    document.getElementById('prevBtn').disabled = currentPage === 1;
-    document.getElementById('nextBtn').disabled = currentPage === totalPages;
-    
-    // Disabled butonlara stil ekle
-    document.getElementById('prevBtn').style.opacity = currentPage === 1 ? '0.5' : '1';
-    document.getElementById('nextBtn').style.opacity = currentPage === totalPages ? '0.5' : '1';
+    try {
+        const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+        const pageInfo = safeGetElement('pageInfo');
+        const prevBtn = safeGetElement('prevBtn');
+        const nextBtn = safeGetElement('nextBtn');
+        
+        if (pageInfo) pageInfo.textContent = `${currentPage} / ${Math.max(totalPages, 1)}`;
+        
+        if (prevBtn) {
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.style.opacity = currentPage === 1 ? '0.5' : '1';
+        }
+        
+        if (nextBtn) {
+            nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+            nextBtn.style.opacity = (currentPage === totalPages || totalPages === 0) ? '0.5' : '1';
+        }
+    } catch (error) {
+        console.warn('Pagination info update error:', error);
+    }
 }
+
+function updateFilterInfo() {
+    try {
+        const count = filteredPosts.length;
+        let infoText = `${count} post${count !== 1 ? 's' : ''} found`;
+        
+        if (activeFilter !== 'all') {
+            infoText += ` in ${activeFilter}`;
+        }
+        
+        if (searchTerm) {
+            infoText += ` for "${searchTerm}"`;
+        }
+        
+        if (resultCount) resultCount.textContent = infoText;
+    } catch (error) {
+        console.warn('Filter info update error:', error);
+    }
+}
+
+// ===== EVENT LISTENERS =====
+function bindEvents() {
+    try {
+        console.log('Binding events...');
+        
+        // Theme toggle
+        if (themeToggle) {
+            themeToggle.addEventListener('click', toggleTheme);
+        }
+        if (mobileThemeToggle) {
+            mobileThemeToggle.addEventListener('click', toggleTheme);
+        }
+        
+        // Keyboard shortcut
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 't' || e.key === 'T') {
+                if (!document.activeElement.matches('input, textarea')) {
+                    toggleTheme();
+                }
+            }
+        });
+
+        // Sidebar
+        if (menuToggle && sidebar) {
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.add('active');
+            });
+        }
+
+        if (closeSidebar && sidebar) {
+            closeSidebar.addEventListener('click', () => {
+                sidebar.classList.remove('active');
+            });
+        }
+
+        // Navigation links
+        navLinks.forEach((link) => {
+            if (link) {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const category = link.getAttribute('data-filter');
+                    filterPosts(category);
+                    
+                    if (window.innerWidth <= 1024 && sidebar) {
+                        sidebar.classList.remove('active');
+                    }
+                });
+            }
+        });
+
+        // Search
+        if (searchBtn) {
+            searchBtn.addEventListener('click', performSearch);
+        }
+        if (searchInput) {
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+        }
+
+        // Clear filters
+        if (clearFilters) {
+            clearFilters.addEventListener('click', clearAllFilters);
+        }
+
+        // Pagination
+        const prevBtn = safeGetElement('prevBtn');
+        const nextBtn = safeGetElement('nextBtn');
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    showPage(currentPage);
+                }
+            });
+        }
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    showPage(currentPage);
+                }
+            });
+        }
+
+        console.log('Events bound successfully');
+    } catch (error) {
+        console.error('Event binding error:', error);
+    }
+}
+
+// ===== UTILITY FUNCTIONS =====
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// ===== EXPORT FOR EXTERNAL USE =====
+window.BlogSystem = {
+    filterPosts,
+    performSearch,
+    clearAllFilters,
+    toggleTheme,
+    get allPosts() { return allPosts; },
+    get filteredPosts() { return filteredPosts; },
+    get currentPage() { return currentPage; },
+    get activeFilter() { return activeFilter; }
+};
+
+console.log('Script loaded successfully');
