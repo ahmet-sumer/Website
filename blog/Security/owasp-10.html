@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,38 +13,37 @@
     <!-- Reading Progress Bar -->
     <div class="reading-progress" id="readingProgress"></div>
 
-    <!-- Sidebar (aynı) -->
-    <nav class="sidebar" id="sidebar">
-        <!-- ... sidebar içeriği ... -->
-    </nav>
-
-    <!-- Mobile Menu Toggle -->
-    
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
 
     <main class="main-content">
         <article class="post-container">
             <!-- Breadcrumb -->
             <div class="breadcrumb">
                 <a href="https://pixrei.xyz">Main Page</a> / 
-                <a href="https://pixrei.xyz/blog">Blog</a> / 
+                <a href="../blog.html">Blog</a> / 
                 <span>OWASP Top 10</span>
             </div>
 
             <!-- Post Header -->
             <div class="post-header">
-                <h1 class="post-title">OWASP Top 10: Web Application Security Riskleri</h1>
+                <h1 class="post-title">OWASP Top 10: Web Application Security Risks</h1>
                 <div class="post-info">
-                    <img src="https://via.placeholder.com/50" alt="Author" class="author-img">
+                    <div class="icon-avatar">
+                        <i class="fas fa-terminal"></i>
+                    </div>
                     <div class="author-info">
                         <p class="author-name">R3i 0Trox</p>
-                        <p class="post-date">14 Haziran 2025 • 10 dk okuma</p>
+                        <p class="post-date">2025 • 10 min read</p>
                     </div>
                 </div>
             </div>
 
             <!-- Table of Contents -->
             <div class="table-of-contents">
-                <h3>İçindekiler</h3>
+                <h3>Table of Contents</h3>
                 <ul>
                     <li><a href="#injection">1. Injection</a></li>
                     <li><a href="#broken-auth">2. Broken Authentication</a></li>
@@ -56,44 +55,44 @@
             <!-- Post Content -->
             <div class="post-content">
                 <p class="lead">
-                    OWASP (Open Web Application Security Project) tarafından belirlenen en kritik 
-                    web uygulama güvenlik risklerini detaylı olarak inceleyeceğiz. Bu riskler, 
-                    modern web uygulamalarında en sık karşılaşılan ve en yıkıcı sonuçlara sahip 
-                    güvenlik açıklarıdır.
+                    We will examine in detail the most critical web application security risks 
+                    identified by OWASP (Open Web Application Security Project). These risks 
+                    represent the most common and devastating security vulnerabilities in modern 
+                    web applications.
                 </p>
 
                 <h2 id="injection">1. Injection</h2>
                 <p>
-                                        SQL, NoSQL, OS ve LDAP injection saldırıları, güvenilmeyen verinin 
-                    komut veya sorgu olarak yorumlanmasına neden olur. Bu tür saldırılar,
-                    veri kaybına, veri bozulmasına veya yetkisiz erişime yol açabilir.
+                    SQL, NoSQL, OS, and LDAP injection attacks occur when untrusted data is 
+                    interpreted as commands or queries. These types of attacks can lead to 
+                    data loss, data corruption, or unauthorized access.
                 </p>
 
                 <div class="alert alert-danger">
-                    <strong>Tehlike!</strong> Injection saldırıları, OWASP Top 10'da 
-                    uzun yıllardır 1. sırada yer almaktadır ve en yaygın güvenlik açığıdır.
+                    <strong>Danger!</strong> Injection attacks have been ranked #1 in the 
+                    OWASP Top 10 for many years and are the most common security vulnerability.
                 </div>
 
-                <h3>SQL Injection Örneği</h3>
-                <p>Aşağıda güvensiz ve güvenli kod örneklerini görebilirsiniz:</p>
+                <h3>SQL Injection Example</h3>
+                <p>Below you can see insecure and secure code examples:</p>
 
                 <div class="code-block-wrapper">
-                    <button class="copy-code-btn" onclick="copyCode(this)" style="padding-left: 2%; margin-right: 77%;">
-                        <i class="fas fa-copy"></i> Kopyala
+                    <button class="copy-code-btn" onclick="copyCode(this)">
+                        <i class="fas fa-copy"></i> Copy
                     </button>
                     <pre data-language="python"><code class="language-python">
-//Güvensiz kod örneği - SQL Injection'a açık
+// Insecure code example - Vulnerable to SQL Injection
 username = request.get('username')
 password = request.get('password')
 query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
 cursor.execute(query)
 
-// Saldırgan şu değeri gönderebilir:
+// Attacker can send the following value:
 // username: admin' OR '1'='1' --
-// Bu durumda sorgu şu hale gelir:
+// In this case, the query becomes:
 // SELECT * FROM users WHERE username = 'admin' OR '1'='1' --' AND password = '...'
 
-// Güvenli kod örneği - Parametreli sorgu kullanımı
+// Secure code example - Using parameterized queries
 query = "SELECT * FROM users WHERE username = ? AND password = ?"
 cursor.execute(query, (username, password))
                     </code></pre>
@@ -101,75 +100,75 @@ cursor.execute(query, (username, password))
 
                 <h3>NoSQL Injection</h3>
                 <p>
-                    MongoDB gibi NoSQL veritabanları da injection saldırılarına karşı 
-                    savunmasız olabilir:
+                    NoSQL databases like MongoDB can also be vulnerable to injection attacks:
                 </p>
                 <div class="code-block-wrapper">
-                    <button class="copy-code-btn" onclick="copyCode(this)" style="padding-left: 2%; margin-right: 77%;">
-                        <i class="fas fa-copy"></i> Kopyala
+                    <button class="copy-code-btn" onclick="copyCode(this)">
+                        <i class="fas fa-copy"></i> Copy
                     </button>
                 <pre data-language="javascript"><code class="language-javascript">
-\\Güvensiz MongoDB sorgusu
+\\ Insecure MongoDB query
 const user = db.users.findOne({
     username: req.body.username,
     password: req.body.password
 });
 
-\\ Saldırgan şu JSON'ı gönderebilir:
+\\ Attacker can send the following JSON:
 \\ { "username": {"$ne": null}, "password": {"$ne": null} }
 
-\\ Güvenli kullanım
+\\ Secure usage
 const user = db.users.findOne({
     username: String(req.body.username),
     password: String(req.body.password)
 });
                 </code></pre>
                 </div>
+
                 <h2 id="broken-auth">2. Broken Authentication</h2>
                 <p>
-                    Kimlik doğrulama ve oturum yönetimi ile ilgili uygulama fonksiyonları 
-                    yanlış uygulandığında, saldırganlar başka kullanıcıların kimliklerine 
-                    bürünebilir veya oturum bilgilerini ele geçirebilir.
+                    When authentication and session management application functions are 
+                    implemented incorrectly, attackers can impersonate other users or 
+                    compromise session information.
                 </p>
 
                 <div class="alert alert-warning">
-                    <strong>Dikkat!</strong> Zayıf parola politikaları, güvensiz oturum 
-                    yönetimi ve eksik çok faktörlü doğrulama bu kategoriye girer.
+                    <strong>Warning!</strong> Weak password policies, insecure session 
+                    management, and missing multi-factor authentication fall into this category.
                 </div>
 
-                <h3>Yaygın Hatalar ve Çözümler</h3>
+                <h3>Common Mistakes and Solutions</h3>
                 
                 <table>
                     <thead>
                         <tr>
                             <th>Problem</th>
                             <th>Risk</th>
-                            <th>Çözüm</th>
+                            <th>Solution</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Zayıf parola politikası</td>
-                            <td>Brute force saldırıları</td>
-                            <td>Minimum 12 karakter, özel karakterler zorunlu</td>
+                            <td>Weak password policy</td>
+                            <td>Brute force attacks</td>
+                            <td>Minimum 12 characters, special characters required</td>
                         </tr>
                         <tr>
-                            <td>Session ID tahmin edilebilir</td>
+                            <td>Predictable Session ID</td>
                             <td>Session hijacking</td>
-                            <td>Kriptografik olarak güvenli rastgele ID'ler</td>
+                            <td>Cryptographically secure random IDs</td>
                         </tr>
                         <tr>
-                            <td>Oturum zaman aşımı yok</td>
-                            <td>Yetkisiz erişim</td>
-                            <td>15-30 dakika inaktivite sonrası otomatik çıkış</td>
+                            <td>No session timeout</td>
+                            <td>Unauthorized access</td>
+                            <td>Auto logout after 15-30 minutes of inactivity</td>
                         </tr>
                     </tbody>
                 </table>
 
-                <h3>Güvenli Authentication Implementasyonu</h3>
+                <h3>Secure Authentication Implementation</h3>
                 <div class="code-block-wrapper">
-                    <button class="copy-code-btn" onclick="copyCode(this)" style="padding-left: 2%; margin-right: 77%;">
-                        <i class="fas fa-copy"></i> Kopyala
+                    <button class="copy-code-btn" onclick="copyCode(this)">
+                        <i class="fas fa-copy"></i> Copy
                     </button>
                 <pre data-language="python"><code class="language-python">
 import bcrypt
@@ -178,105 +177,106 @@ from datetime import datetime, timedelta
 
 class SecureAuth:
     def hash_password(self, password):
-    // Parolayı güvenli şekilde hash'le
+        // Hash password securely
         salt = bcrypt.gensalt()
         return bcrypt.hashpw(password.encode('utf-8'), salt)
                         
     def verify_password(self, password, hashed):
-        // Parolayı doğrula
+        // Verify password
         return bcrypt.checkpw(password.encode('utf-8'), hashed)
                         
     def generate_session_token(self):
-        // Güvenli session token oluştur
+        // Generate secure session token
         return secrets.token_urlsafe(32)
                         
     def create_session(self, user_id):
         token = self.generate_session_token()
         expiry = datetime.utcnow() + timedelta(hours=2)
                             
-        // Session'ı veritabanına kaydet
+         Save session to database
         session = {
-        'token': token,
-        'user_id': user_id,
-        'created_at': datetime.utcnow(),
-        'expires_at': expiry,
-        'ip_address': request.remote_addr,
-        'user_agent': request.headers.get('User-Agent')
-            }
+            'token': token,
+            'user_id': user_id,
+            'created_at': datetime.utcnow(),
+            'expires_at': expiry,
+            'ip_address': request.remote_addr,
+            'user_agent': request.headers.get('User-Agent')
+        }
                             
-    return session
+        return session
                 </code></pre>
                 </div>
+
                 <h2 id="sensitive-data">3. Sensitive Data Exposure</h2>
                 <p>
-                    Hassas verilerin (kredi kartı bilgileri, kişisel veriler, şifreler) 
-                    yeterince korunmaması durumunda oluşan güvenlik açığıdır.
+                    Security vulnerability that occurs when sensitive data (credit card information, 
+                    personal data, passwords) is not adequately protected.
                 </p>
 
                 <blockquote>
-                    "Verilerinizi korumak için şifreleme kullanın, ancak şifreleme anahtarlarınızı 
-                    da güvenli bir şekilde saklayın. Zincir, en zayıf halkası kadar güçlüdür."
+                    "Use encryption to protect your data, but also store your encryption keys 
+                    securely. A chain is only as strong as its weakest link."
                 </blockquote>
 
-                <h3>Veri Koruma Prensipleri</h3>
+                <h3>Data Protection Principles</h3>
                 <ul>
-                    <li><strong>Veri Minimizasyonu:</strong> Sadece ihtiyacınız olan veriyi toplayın</li>
-                    <li><strong>Şifreleme:</strong> Hem transit hem de rest halindeki veriyi şifreleyin</li>
-                    <li><strong>Anahtar Yönetimi:</strong> Şifreleme anahtarlarını güvenli saklayın</li>
-                    <li><strong>Veri Sınıflandırma:</strong> Hangi verinin hassas olduğunu bilin</li>
+                    <li><strong>Data Minimization:</strong> Only collect the data you need</li>
+                    <li><strong>Encryption:</strong> Encrypt data both in transit and at rest</li>
+                    <li><strong>Key Management:</strong> Store encryption keys securely</li>
+                    <li><strong>Data Classification:</strong> Know which data is sensitive</li>
                 </ul>
 
                 <div class="alert alert-info">
-                    <strong>İpucu:</strong> HTTPS kullanımı, veritabanı şifrelemesi ve 
-                    güvenli backup stratejileri bu konuda kritik öneme sahiptir.
+                    <strong>Tip:</strong> HTTPS usage, database encryption, and secure backup 
+                    strategies are critical in this regard.
                 </div>
 
                 <h2 id="xxe">4. XML External Entities (XXE)</h2>
                 <p>
-                    Kötü yapılandırılmış XML işleyicileri, harici entity referanslarını 
-                    işlediğinde oluşan güvenlik açığıdır.
+                    Security vulnerability that occurs when misconfigured XML processors 
+                    process external entity references.
                 </p>
                 <div class="code-block-wrapper">
-                    <button class="copy-code-btn" onclick="copyCode(this)" style="padding-left: 2%; margin-right: 77%;">
-                        <i class="fas fa-copy"></i> Kopyala
+                    <button class="copy-code-btn" onclick="copyCode(this)">
+                        <i class="fas fa-copy"></i> Copy
                     </button>
                     <pre data-language="xml"><code class="language-xml">
-&lt;!// Tehlikeli XML örneği --&gt;
+&lt;!// Dangerous XML example --&gt ;
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;!DOCTYPE data [
 &lt;!ENTITY xxe SYSTEM "file:///etc/passwd"&gt;
-    ]&gt;
+]&gt;
 &lt;data&gt;
     &lt;user&gt;&xxe;&lt;/user&gt;
 &lt;/data&gt;
                     </code></pre>
                 </div>
 
-                <h3>XXE Korunma Yöntemleri</h3>
+                <h3>XXE Protection Methods</h3>
                 <div class="code-block-wrapper">
-                    <button class="copy-code-btn" onclick="copyCode(this)" style="padding-left: 2%; margin-right: 77%;">
-                        <i class="fas fa-copy"></i> Kopyala
+                    <button class="copy-code-btn" onclick="copyCode(this)">
+                        <i class="fas fa-copy"></i> Copy
                     </button>
                     <pre data-language="python"><code class="language-python">
 import defusedxml.ElementTree as ET
 
-// Güvenli XML parsing
+// Safe XML parsing
 def safe_parse_xml(xml_string):
     try:
-        // defusedxml kütüphanesi XXE saldırılarına karşı koruma sağlar
+        // defusedxml library provides protection against XXE attacks
         tree = ET.fromstring(xml_string)
         return tree
     except ET.ParseError as e:
         logger.error(f"XML parsing error: {e}")
         return None
 
-// Alternatif: XML yerine JSON kullanın
+// Alternative: Use JSON instead of XML
 import json
 
 def parse_json_safely(json_string):
     try:
         data = json.loads(json_string)
-        // JSON doğal olarak XXE'ye karşı güvenlidir
+        // JSON is naturally secure against XXE
         return data
     except json.JSONDecodeError as e:
         logger.error(f"JSON parsing error: {e}")
@@ -285,9 +285,8 @@ def parse_json_safely(json_string):
                 </div>
                     
                 <div class="alert alert-success">
-                <strong>Başarılı!</strong>    
-                    Bu yazıyı okuyarak OWASP Top 10'un ilk 4 maddesini 
-                öğrendiniz. Güvenlik, sürekli öğrenme gerektiren bir alandır.
+                    <strong>Success!</strong> By reading this article, you've learned the first 4 
+                    items of the OWASP Top 10. Security is a field that requires continuous learning.
                 </div>
             </div>
 
@@ -305,23 +304,23 @@ def parse_json_safely(json_string):
             <!-- Share Section -->
             <div class="share-section">
                 <div>
-                    <strong>Bu yazı faydalı olduysa paylaşın:</strong>
-                                    </div>
+                    <strong>If this article was helpful, please share it:</strong>
+                </div>
                 <div class="share-buttons">
                     <a href="https://twitter.com/intent/tweet?text=OWASP%20Top%2010%20-%20Web%20Application%20Security&url=https://blog.pixrei.xyz/posts/owasp-10.html" 
-                       target="_blank" class="share-btn" title="Twitter'da Paylaş">
+                       target="_blank" class="share-btn" title="Share on Twitter">
                         <i class="fab fa-twitter"></i>
                     </a>
                     <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://blog.pixrei.xyz/posts/owasp-10.html" 
-                       target="_blank" class="share-btn" title="LinkedIn'de Paylaş">
+                       target="_blank" class="share-btn" title="Share on LinkedIn">
                         <i class="fab fa-linkedin"></i>
                     </a>
                     <a href="https://www.facebook.com/sharer/sharer.php?u=https://blog.pixrei.xyz/posts/owasp-10.html" 
-                       target="_blank" class="share-btn" title="Facebook'ta Paylaş">
+                       target="_blank" class="share-btn" title="Share on Facebook">
                         <i class="fab fa-facebook"></i>
                     </a>
-                    <a href="mailto:?subject=OWASP%20Top%2010&body=Bu%20yazıyı%20okumalısın:%20https://blog.pixrei.xyz/posts/owasp-10.html" 
-                       class="share-btn" title="E-posta ile Gönder">
+                    <a href="mailto:?subject=OWASP%20Top%2010&body=You%20should%20read%20this:%20https://blog.pixrei.xyz/posts/owasp-10.html" 
+                       class="share-btn" title="Send via Email">
                         <i class="fas fa-envelope"></i>
                     </a>
                 </div>
@@ -329,24 +328,25 @@ def parse_json_safely(json_string):
 
             <!-- Author Bio -->
             <div class="author-bio">
-                <img src="https://via.placeholder.com/100" alt="Author" class="author-bio-img">
+                <div class="icon-avatar">
+                    <i class="fas fa-terminal"></i>
+                </div>
                 <div class="author-bio-content">
-                    <h3>Yazar Hakkında</h3>
+                    <h3>About the Author</h3>
                     <p>
-                        Penetration Tester ve Red Teamer olarak kendimi geliştiriyorum.  
-                        Web application security, network security ve cloud security konularında 
-                        tecrübeler edinirken, TryHackMe ve HackTheBox platformlarında aktif 
-                        olarak CTF çözüyorum.
+                        I'm developing myself as a Penetration Tester and Red Team member. 
+                        While gaining new experiences in web application security, network security, 
+                        and cloud security topics, I actively solve CTFs on TryHackMe and HackTheBox platforms.
                     </p>
                     <div class="author-social">
                         <a href="https://github.com/Ege-Sumer" target="_blank" class="share-btn">
                             <i class="fab fa-github"></i>
                         </a>
-                        <a href="https://linkedin.com/in/ahmet-ege-sümer-9156b7222" target="_blank" class="share-btn">
+                        <a href="https://linkedin.com/in/ahmet-ege-sümer" target="_blank" class="share-btn">
                             <i class="fab fa-linkedin"></i>
                         </a>
-                        <a href="https://twitter.com" target="_blank" class="share-btn">
-                            <i class="fab fa-twitter"></i>
+                        <a href="https://www.instagram.com/pixrei.xyz" target="_blank" class="share-btn">
+                            <i class="fab fa-instagram"></i>
                         </a>
                     </div>
                 </div>
@@ -355,74 +355,76 @@ def parse_json_safely(json_string):
             <!-- Post Navigation -->
             <nav class="post-navigation">
                 <a href="burp-extensions.html" class="nav-previous">
-                    <span class="nav-label">← Önceki Yazı</span>
-                    <span class="nav-title">Burp Suite Extensions: En Kullanışlı 10 Eklenti</span>
+                    <span class="nav-label">← Previous Post</span>
+                    <span class="nav-title">Burp Suite Extensions: Top 10 Most Useful Add-ons</span>
                 </a>
                 <a href="htb-keeper.html" class="nav-next">
-                    <span class="nav-label">Sonraki Yazı →</span>
-                    <span class="nav-title">HackTheBox - Keeper Makinesi Çözümü</span>
+                    <span class="nav-label">Next Post →</span>
+                    <span class="nav-title">HackTheBox - Keeper Machine Walkthrough</span>
                 </a>
             </nav>
         </article>
 
         <!-- Related Posts -->
         <section class="related-posts">
-            <h3>İlgili Yazılar</h3>
+            <h3>Related Articles</h3>
             <div class="related-grid">
-                <a style="margin-left: 10px;" href="web-security-basics.html" class="related-card">
-                    <h4>Web Security Temelleri</h4>
-                    <p>Web uygulamalarında güvenlik için bilmeniz gereken temel konular...</p>
-                    <span class="read-time"><i class="far fa-clock"></i> 5 dk okuma</span>
+                <a href="web-security-basics.html" class="related-card">
+                    <h4>Web Security Fundamentals</h4>
+                    <p>Essential topics you need to know for web application security...</p>
+                    <span class="read-time"><i class="far fa-clock"></i> 5 min read</span>
                 </a>
-                <a href="sql-injection-deep-dive.html" class="related-card">
+                                <a href="sql-injection-deep-dive.html" class="related-card">
                     <h4>SQL Injection Deep Dive</h4>
-                    <p>SQL Injection saldırılarının detaylı analizi ve korunma yöntemleri...</p>
-                    <span class="read-time"><i class="far fa-clock"></i> 8 dk okuma</span>
+                    <p>Detailed analysis of SQL Injection attacks and protection methods...</p>
+                    <span class="read-time"><i class="far fa-clock"></i> 8 min read</span>
                 </a>
                 <a href="security-headers.html" class="related-card">
-                    <h4>Security Headers Rehberi</h4>
-                    <p>Web uygulamalarınızı güvenli hale getiren HTTP header'ları...</p>
-                    <span class="read-time"><i class="far fa-clock"></i> 6 dk okuma</span>
+                    <h4>Security Headers Guide</h4>
+                    <p>HTTP headers that make your web applications secure...</p>
+                    <span class="read-time"><i class="far fa-clock"></i> 6 min read</span>
                 </a>
             </div>
         </section>
 
         <!-- Comments Section -->
-        <section class="comments-section" style="margin-left: 10px; margin-bottom: 10px;">
-            <h3>Yorumlar</h3>
+        <section class="comments-section">
+            <h3>Comments</h3>
             
             <!-- Comment Form -->
             <form class="comment-form" id="commentForm">
                 <div class="form-group">
-                    <label for="commentName">İsim</label>
-                    <input type="text" id="commentName" placeholder="Adınız..." required>
+                    <label for="commentName">Name</label>
+                    <input type="text" id="commentName" placeholder="Your name..." required>
                 </div>
                 <div class="form-group">
-                    <label for="commentEmail">E-posta (yayınlanmayacak)</label>
-                    <input type="email" id="commentEmail" placeholder="E-posta adresiniz..." required>
+                    <label for="commentEmail">Email (will not be published)</label>
+                    <input type="email" id="commentEmail" placeholder="Your email address..." required>
                 </div>
                 <div class="form-group">
-                    <label for="commentText">Yorum</label>
-                    <textarea id="commentText" placeholder="Yorumunuzu yazın..." required></textarea>
+                    <label for="commentText">Comment</label>
+                    <textarea id="commentText" placeholder="Write your comment..." required></textarea>
                 </div>
-                <button type="submit">Yorum Gönder</button>
+                <button type="submit">Submit Comment</button>
             </form>
 
-            <!-- Comments List
+            <!-- Comments List -->
             <div class="comments-list">
                 <div class="comment">
                     <div class="comment-header">
                         <div class="comment-author">
-                            <img src="https://via.placeholder.com/40" alt="User">
-                            <strong></strong>
+                            <div class="comment-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <strong>John Smith</strong>
                         </div>
-                        <span class="comment-date"></span>
+                        <span class="comment-date">2 days ago</span>
                     </div>
                     <div class="comment-content">
                         <p>
-                            Çok faydalı bir yazı olmuş, özellikle SQL Injection örnekleri 
-                            çok açıklayıcı. NoSQL injection konusunu ilk defa bu kadar 
-                            net anladım. Teşekkürler!
+                            Very useful article, especially the SQL Injection examples 
+                            are very explanatory. I understood the NoSQL injection topic 
+                            so clearly for the first time. Thank you!
                         </p>
                     </div>
                 </div>
@@ -430,30 +432,25 @@ def parse_json_safely(json_string):
                 <div class="comment">
                     <div class="comment-header">
                         <div class="comment-author">
-                            <img src="https://via.placeholder.com/40" alt="User">
-                            <strong></strong>
+                            <div class="comment-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <strong>Alice Johnson</strong>
                         </div>
-                        <span class="comment-date"></span>
+                        <span class="comment-date">5 days ago</span>
                     </div>
                     <div class="comment-content">
                         <p>
-                            OWASP Top 10'un geri kalan maddelerini de anlatacağınız 
-                            bir yazı serisi olacak mı? XSS ve CSRF konularını da 
-                            merak ediyorum.
+                            Will there be an article series covering the remaining items 
+                            of the OWASP Top 10? I'm also curious about XSS and CSRF topics.
                         </p>
                     </div>
                 </div>
             </div>
         </section>
-    </main> -->
-
-    <!-- Dark Mode Toggle -->
-    <button class="dark-mode-toggle" id="darkModeToggle" title="Karanlık Mod">
-        <i class="fas fa-moon"></i>
-    </button>
+    </main>
 
     <!-- Scripts -->
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
@@ -461,4 +458,3 @@ def parse_json_safely(json_string):
     <script src="/blog/post-script.js"></script>
 </body>
 </html>
-                
