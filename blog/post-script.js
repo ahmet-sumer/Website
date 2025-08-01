@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (code) {
                 const text = code.textContent;
                 
-                // Textarea yöntemi
+                
                 const textarea = document.createElement('textarea');
                 textarea.value = text;
                 textarea.setAttribute('readonly', '');
@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.execCommand('copy');
                 document.body.removeChild(textarea);
                 
-                // Görsel geri bildirim
+                
                 this.innerHTML = '<i class="fas fa-check"></i> Kopyalandı!';
                 setTimeout(() => {
                     this.innerHTML = '<i class="fas fa-copy"></i> Kopyala';
@@ -270,33 +270,27 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Sayfa yüklendiğinde
 document.addEventListener('DOMContentLoaded', function() {
-    // Tüm nav linkleri ve blog kartlarını al
     const navLinks = document.querySelectorAll('.nav-link');
     const blogCards = document.querySelectorAll('.blog-card');
     
-    // Her nav linkine click event ekle
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
-            // Aktif class'ı güncelle
             navLinks.forEach(l => l.classList.remove('active'));
             this.classList.add('active');
             
-            // Hash'i al (#security, #ctf vs.)
-            const hash = this.getAttribute('href').substring(1); // # işaretini kaldır
             
-            // Blog kartlarını filtrele
+            const hash = this.getAttribute('href').substring(1); 
+            
+            
             filterBlogCards(hash);
         });
     });
     
-    // URL'de hash varsa otomatik filtrele
     if (window.location.hash) {
         const hash = window.location.hash.substring(1);
         filterBlogCards(hash);
         
-        // İlgili nav linkini aktif yap
         const activeLink = document.querySelector(`a[href="#${hash}"]`);
         if (activeLink) {
             navLinks.forEach(l => l.classList.remove('active'));
@@ -305,8 +299,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Blog kartlarını filtreleme fonksiyonu
-// filterBlogCards fonksiyonunu bulun ve şununla değiştirin
 function filterBlogCards(category) {
     // Kategoriyi filtrele
     if (category === 'home' || category === 'all') {
@@ -315,7 +307,6 @@ function filterBlogCards(category) {
         filteredPosts = allPosts.filter(post => post.category === category);
     }
     
-    // İlk sayfaya dön
     currentPage = 1;
     
     // Sonuçları göster
@@ -333,11 +324,11 @@ function filterBlogCards(category) {
     }
 }
 
-// Sonuç bulunamadı mesajı
+
 function showNoResultsMessage(category) {
-    const container = document.querySelector('.blog-posts-container'); // Blog kartlarının bulunduğu container
+    const container = document.querySelector('.blog-posts-container'); 
     
-    // Eğer zaten mesaj varsa kaldır
+    
     const existingMessage = container.querySelector('.no-results');
     if (existingMessage) {
         existingMessage.remove();
@@ -354,7 +345,7 @@ function showNoResultsMessage(category) {
 
 
 
-// Sonsuz kaydırma sistemi
+
 let isLoading = false;
 let currentLoadedPosts = 4;
 
@@ -364,7 +355,7 @@ function initInfiniteScroll() {
         
         const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
         
-        // Sayfanın sonuna yaklaştıysak
+       
         if (scrollTop + clientHeight >= scrollHeight - 100) {
             loadMorePosts();
         }
@@ -374,13 +365,13 @@ function initInfiniteScroll() {
 function loadMorePosts() {
     isLoading = true;
     
-    // Loading göster
+  
     const loader = document.createElement('div');
     loader.className = 'post-loader';
     loader.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yükleniyor...';
     document.getElementById('blogPosts').appendChild(loader);
     
-    // 1 saniye sonra yeni postları yükle
+    
     setTimeout(() => {
         const newPosts = allBlogPosts.slice(currentLoadedPosts, currentLoadedPosts + 4);
         
@@ -393,7 +384,7 @@ function loadMorePosts() {
         loader.remove();
         isLoading = false;
         
-        // Tüm postlar yüklendiyse
+        
         if (currentLoadedPosts >= allBlogPosts.length) {
             window.removeEventListener('scroll', arguments.callee);
         }
