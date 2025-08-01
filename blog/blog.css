@@ -1,6 +1,6 @@
-
+/* Blog CSS - Cleaned & Optimized */
 :root {
-    
+    /* Ana sayfayla uyumlu renk paleti */
     --primary-green: #00ff88;
     --primary-blue: #00d4ff;
     --primary-purple: #7c77c6;
@@ -769,6 +769,7 @@ input:focus-visible {
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
 }
+
 .icon-avatar {
     width: 80px;
     height: 80px;
@@ -781,4 +782,135 @@ input:focus-visible {
     font-size: 2rem;
     color: var(--primary-green);
     border: 1px solid var(--border-color);
+}
+
+/* CSS dosyanızın en üstüne ekleyin - Light Mode Variables */
+[data-theme="light"] {
+    --primary-green: #00cc6a;
+    --primary-blue: #0099cc;
+    --primary-purple: #6b66a3;
+    
+    --bg-dark: #ffffff;
+    --bg-darker: #f8f9fa;
+    --card-bg: #ffffff;
+    --card-hover: #f1f3f4;
+    
+    --text-primary: #1a1a1a;
+    --text-secondary: #333333;
+    --text-muted: #666666;
+    --text-light: #888888;
+    
+    --border-color: #e0e0e0;
+    --shadow-hover: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --shadow-glow: 0 0 20px rgba(0, 204, 106, 0.2);
+}
+
+/* Theme Toggle Button Styles - CSS dosyanızın sonuna ekleyin */
+.theme-toggle,
+.mobile-theme-toggle {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.theme-toggle:hover,
+.mobile-theme-toggle:hover {
+    color: var(--primary-green);
+    background: rgba(0, 255, 136, 0.1);
+    border-color: var(--primary-green);
+    transform: rotate(180deg);
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mobile-theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+}
+
+/* Light Mode Specific Adjustments */
+[data-theme="light"] .search-input {
+    background: var(--card-bg);
+    border-color: var(--border-color);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .search-input:focus {
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 2px rgba(0, 204, 106, 0.1);
+}
+
+[data-theme="light"] .blog-card {
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .blog-card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] .sidebar {
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .tag {
+    background: rgba(0, 204, 106, 0.1);
+    color: var(--primary-green);
+}
+
+[data-theme="light"] .social-links a {
+    background: var(--bg-darker);
+}
+
+[data-theme="light"] .profile-section {
+    background: linear-gradient(135deg, rgba(0, 204, 106, 0.05) 0%, rgba(0, 153, 204, 0.05) 100%);
+    border-color: rgba(0, 204, 106, 0.15);
+}
+
+[data-theme="light"] .blog-header {
+    background: linear-gradient(135deg, rgba(0, 204, 106, 0.08) 0%, rgba(0, 153, 204, 0.08) 100%);
+    border-color: rgba(0, 204, 106, 0.15);
+}
+
+/* Scrollbar Light Mode */
+[data-theme="light"] ::-webkit-scrollbar-track {
+    background: var(--bg-darker);
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+    background: var(--primary-green);
+    box-shadow: none;
+}
+
+/* Mobile Responsive for Theme Toggle */
+@media (max-width: 1024px) {
+    .theme-toggle {
+        display: none;
+    }
+    
+    .mobile-theme-toggle {
+        display: flex;
+    }
+}
+
+@media (min-width: 1025px) {
+    .mobile-theme-toggle {
+        display: none;
+    }
 }
