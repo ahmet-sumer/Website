@@ -159,6 +159,10 @@ body.loaded {
     transition: all 0.4s ease;
     transform: translateX(-50%);
 }
+#navbar li a:focus {
+    outline: none;
+    color: var(--primary-green);
+}
 #navbar li a:active,
 #navbar li a:focus {
     outline: none;
@@ -605,12 +609,7 @@ h2::after {
 .box:hover::before {
     opacity: 1;
 }
-a:focus,
-a:active,
-a:visited {
-    gap: 5px;
-    outline: none;
-}
+
 .box:hover {
     transform: translateY(-20px) rotateX(5deg) rotateY(5deg);
     box-shadow: 
@@ -910,11 +909,16 @@ a:visited {
     gap: 5px;
     transition: all 0.3s ease;
 }
-
+a:focus,
+a:active,
+a:visited {
+    
+    gap: 5px;
+    outline: none;
+}
 .read-more-link:hover {
     gap: 10px;
 }
-
 .blog-section-footer {
     text-align: center;
     margin-top: 50px;
@@ -1710,4 +1714,3 @@ img {
         border: 2px solid black;
     }
 }
-
