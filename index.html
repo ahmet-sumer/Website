@@ -100,7 +100,9 @@
     <section id="main">
         <div class="header-center">
             <h3>
-                About Me
+                
+                Meet The Developer
+                <h2>My Journey in Cybersecurity</h2>
             </h3>
         </div>
         <section id="boxes">
@@ -109,7 +111,8 @@
                     <img class="box-img" src="content/programmer.jpeg" alt="Programmer">
                     <div class="box-overlay">
                         <div class="box-content">
-                            <h2 class="box-title">My Name is Ahmet</h2>
+                            <h1 class="box-title"><i>Hey There,
+                                I'm Ahmet</i></h2>
                             <p class="box-subtitle">I'm a Software Engineer</p>
                             <p class="box-subtitle">and Red Team Rookie</p>
                         </div>
@@ -137,8 +140,8 @@
                     <img class="box-img" src="content/download.jpeg" alt="Projects">
                     <div class="box-overlay">
                         <div class="box-content">
-                            <h2 class="box-title"> <a href="https://github.com/Ege-Sumer" target="_blank"><i class="fas fa-code"></i></a>
-                            </h2>
+                            <h3 class="box-title"> <a href="https://github.com/Ege-Sumer" target="_blank"><i class="fas fa-code"></i></a>
+                            </h3>
                             
                             <p class="box-subtitle">Projects</p>
                             <p class="box-subtitle">_>Still Developing<_</p>
@@ -147,16 +150,14 @@
                 </div>
             </div>
         </section>
-        <div class="header-center" id="header-center">
-            <h3>In Progress</h3>
-        </div>
+        
         <!-- Start of Blog Section -->
 <section id="blog-section" class="blog-preview-section">
-    <div class="container">
-        <div class="section-header">
-            <h2 class="section-title">Blog Posts</h2>
-            <p class="section-subtitle">Security Research, CTF Writeups & Tutorials</p>
-        </div>
+    <div class="header-center">
+        <h3>Blog Posts</h3>
+        <h2>Security Research, CTF Writeups & Tutorials</h2>
+        
+    </div>
         
         <div class="blog-preview-grid">
             <!-- Blog Post 1 -->
@@ -243,34 +244,83 @@
                 View All Posts <i class="fas fa-external-link-alt"></i>
             </a>
         </div>
-    </div>
+    
 </section>
 <!-- End of Blog Section -->
 
 
         <div class="header-center">
-            <h3>Contact</h3>
+            <h3>Let's Connect
+            <h2>Ready to Collaborate?</h2>
+            </h3>
         </div>
 
+
         <!--Start of Last Section (Form & Logos)-->
-        <section class="last-section" id="last-section">
-            <hr class="form-logo-divider">
-            <div class="form">
-                <form action="">
-                    <label for="email"><input id="email" type="email" placeholder="E-Mail" autocomplete="off" required></label>
-                    <label for="name"><input id="name" type="text" placeholder="Name" autocomplete="off" required></label>
-                    <label for="write-box"><textarea name="text" id="write-box" placeholder="What's your issue" rows="5px" required></textarea></label>
-                    <input type="submit" id="submit" value="Submit" class="submit-button">
-                </form>
-            </div>
-            
+<section class="last-section" id="last-section">
+    <div class="contact-content">
+        <div class="form">
+            <h3 class="form-title">Get In Touch</h3>
+            <form action="" method="POST">
+                <div class="form-group">
+                    <input id="email" type="email" placeholder="Your Email Address" autocomplete="email" required>
+                    <div class="error-message">Please enter a valid email address</div>
+                </div>
+                <div class="form-group">
+                    <input id="name" type="text" placeholder="Your Full Name" autocomplete="name" required>
+                    <div class="error-message">Please enter your name</div>
+                </div>
+                <div class="form-group">
+                    <textarea id="write-box" placeholder="Tell me about your project or just say hello..." rows="6" required></textarea>
+                    <div class="error-message">Please enter your message</div>
+                </div>
+                <button type="submit" id="submit" class="submit-button">
+                    Send Message
+                </button>
+                <div class="success-message">Thank you! Your message has been sent successfully.</div>
+            </form>
+        </div>
+        
+        <div class="social-section">
+            <h3 class="social-title">Let's Connect</h3>
+            <p class="social-subtitle">Follow me on social media or check out my work</p>
             <ul id="logos">
-                <li><a href="https://www.linkedin.com/in/ahmet-ege-s%C3%BCmer-9156b7222/" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a></li>
-                <li><a href="https://www.instagram.com/pixrei.xyz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank"><i class="fab fa-instagram"></i></a></li>
-                <li><a href="https://github.com/Ege-Sumer" target="_blank"><i class="fab fa-github"></i></i></a></li>
+                <li>
+                    <a href="https://www.linkedin.com/in/ahmet-ege-s%C3%BCmer-9156b7222/" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       aria-label="Visit my LinkedIn profile">
+                        <i class="fa-brands fa-linkedin-in"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.instagram.com/pixrei.xyz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       aria-label="Follow me on Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://github.com/Ege-Sumer" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       aria-label="Check out my GitHub projects">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://pixrei.xyz/blog" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       aria-label="Read my blog">
+                        <i class="fas fa-blog"></i>
+                    </a>
+                </li>
             </ul>
-        </section>
-    </section>
+        </div>
+    </div>
+</section>
     <script src="first.js"></script>
 </body>
 </html>
