@@ -605,7 +605,12 @@ h2::after {
 .box:hover::before {
     opacity: 1;
 }
-
+a:focus,
+a:active,
+a:visited {
+    gap: 5px;
+    outline: none;
+}
 .box:hover {
     transform: translateY(-20px) rotateX(5deg) rotateY(5deg);
     box-shadow: 
@@ -1705,3 +1710,4 @@ img {
         border: 2px solid black;
     }
 }
+
