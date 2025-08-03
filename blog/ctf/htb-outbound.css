@@ -1326,7 +1326,9 @@ body {
     blog-post-footer {
         padding: 40px 30px;
     }
-    
+    img{
+        width: 100%;
+    }
     .author-info {
         flex-direction: column;
         text-align: center;
@@ -1508,4 +1510,5 @@ body {
         background: #f8f9fa;
         border: 1px solid #dee2e6;
     }
+
 }
