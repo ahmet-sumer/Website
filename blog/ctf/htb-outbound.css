@@ -1421,7 +1421,9 @@ body {
      .blog-post-footer {
         padding: 30px 20px;
     }
-    
+    img{
+        width: 100%;
+    }
     .author-info {
         padding: 15px;
     }
@@ -1512,3 +1514,4 @@ body {
     }
 
 }
+
