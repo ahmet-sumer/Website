@@ -952,7 +952,9 @@ body {
         padding: 25px;
         border-radius: 15px;
     }
-    
+    .copy-code-btn{
+        right: 80%;
+    }
     .post-header .post-title {
         font-size: 1.8rem;
     }
@@ -1014,6 +1016,7 @@ body {
     .copy-code-btn {
         padding: 6px 12px;
         font-size: 0.8rem;
+        right: 80%;
     }
     
     .theme-toggle {
@@ -1531,7 +1534,9 @@ html[lang="en"] .post-content {
     .post-content table {
         font-size: 0.9rem;
     }
-    
+    .copy-code-btn{
+        right: 80%;
+    }
     .post-content th,
     .post-content td {
         padding: 10px 8px;
@@ -1553,7 +1558,9 @@ html[lang="en"] .post-content {
             top: -9999px;
             left: -9999px;
         }
-        
+        .copy-code-btn{
+            right: 80%;
+        }
         .post-content tr {
             border: 1px solid var(--border-color);
             padding: 10px;
@@ -1634,7 +1641,7 @@ html[lang="en"] .post-content {
     
     .copy-code-btn {
         top: 10px;
-        right: 10px;
+        left: 10%;
         padding: 6px 10px;
         font-size: 0.8rem;
     }
@@ -1719,4 +1726,5 @@ body.loaded {
         transform: translateY(0);
     }
 }
+
 
