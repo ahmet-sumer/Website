@@ -154,23 +154,6 @@ Nmap done: 1 IP address (1 host) scanned in 12.45 seconds</code></pre>
                         </ul>
                     </div>
 
-                    <h3>SSH Connection Attempt</h3>
-                    <p>Let's first try the provided credentials against SSH:</p>
-
-                    <div class="code-block">
-                        <div class="code-header">
-                            <span class="code-title">🔐 SSH Connection Test</span>
-                        </div>
-                        <pre><code>ssh tyler@10.10.11.77
-tyler@10.10.11.77's password: LhKL1o9Nm3X2
-
-Permission denied, please try again.</code></pre>
-                    </div>
-
-                    <div class="info-box">
-                        <p><strong>Result:</strong> SSH access denied. The credentials are valid somewhere else, likely the web application we discovered.</p>
-                    </div>
-
                     <h3>Domain Configuration</h3>
                     <p>Since we discovered a subdomain, let's add it to our hosts file:</p>
 
@@ -554,7 +537,7 @@ mysql> SELECT sess_id, changed, ip, LENGTH(vars) as vars_length FROM session;
                         <p>This Base64-encoded session data contains encrypted password information. We can see references to:</p>
                         <ul>
                             <li><strong>username:</strong> jacob</li>
-                            <li><strong>password:</strong> L7Rv00A8TuwJAr67kITxxcSgnIk25Am/ (encrypted)</li>
+                            <li><strong>password:</strong> L7Rv00A8TuwJAr67kITxxcSgnIk25Am/</li>
                             <li><strong>user_id:</strong> 1</li>
                         </ul>
                     </div>
@@ -564,7 +547,7 @@ mysql> SELECT sess_id, changed, ip, LENGTH(vars) as vars_length FROM session;
                     <h2>🔐 Cryptographic Analysis</h2>
 
                     <h3>Session Data Decoding</h3>
-                    <p>From our database enumeration, we extracted jacob's encrypted password from the session data. Now we need to decrypt it using the DES key we found in the configuration file.</p>
+                    <p>From our database enumeration, we extracted jacob's encrypted password from the session data and with some research we have reached Roundcube Database uses TripleDES encryption. Now we need to decrypt it using the DES key we found in the configuration file.</p>
 
                     <div class="highlight-box">
                         <h4>🔑 Encryption Details Discovered</h4>
@@ -668,7 +651,7 @@ mysql> SELECT sess_id, changed, ip, LENGTH(vars) as vars_length FROM session;
                     <div class="success-box">
                         <h3>🎉 Password Successfully Decrypted!</h3>
                         <p><strong>Jacob's Password:</strong> <code>595mO8DmwGeD</code></p>
-                        <p>This password can now be used for SSH access to gain user privileges on the target system.</p>
+                        <p>This password can now be used for change user on the target system.</p>
                     </div>
 
                     <div class="technical-box">
@@ -786,8 +769,6 @@ Delivered-To: jacob@outbound.htb</code></pre>
                         <ul>
                             <li><strong>SSH Username:</strong> jacob</li>
                             <li><strong>SSH Password:</strong> gY4Mr3alevP4</li>
-                            <li><strong>Privilege Escalation Hint:</strong> "below" tool with special permissions</li>
-                            <li><strong>Tool Location:</strong> /usr/bin/below</li>
                         </ul>
                     </div>
 
