@@ -1,6 +1,4 @@
-/* Blog uyumlu renk paleti */
 :root {
-    /* Ana sayfayla uyumlu renk paleti */
     --primary-green: #00ff88;
     --primary-blue: #00d4ff;
     --primary-purple: #7c77c6;
@@ -1734,7 +1732,7 @@ body.loaded {
     right: 2rem;
     width: 50px;
     height: 50px;
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(45deg, var(--secondary-color));
     color: white;
     border: none;
     border-radius: 50%;
@@ -1755,4 +1753,5 @@ body.loaded {
     transform: translateY(-3px);
     box-shadow: 0 10px 25px rgba(0, 255, 136, 0.3);
 }
+
 
