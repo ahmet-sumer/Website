@@ -143,4 +143,14 @@
     visibility: hidden;
     z-index: 1000;
 }
+.scroll-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.scroll-to-top:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 255, 136, 0.3);
+}
+
 
