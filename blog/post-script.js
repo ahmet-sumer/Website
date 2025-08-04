@@ -654,13 +654,13 @@ class BlogFilter {
 }
 
 // ====================================
-        // SCROLL TO TOP FUNCTIONALITY
-        // ====================================
+// SCROLL TO TOP FUNCTIONALITY
+// ====================================
         
-        document.addEventListener('DOMContentLoaded', function() {
-            const scrollToTopBtn = document.getElementById('scrollToTop');
+document.addEventListener('DOMContentLoaded', function() {
+    const scrollToTopBtn = document.getElementById('scrollToTop');
             
-            if (scrollToTopBtn) {
+        if (scrollToTopBtn) {
                 // Show/hide scroll to top button
                 window.addEventListener('scroll', function() {
                     if (window.pageYOffset > 300) {
@@ -679,3 +679,4 @@ class BlogFilter {
                 });
             }
         });
+
