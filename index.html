@@ -5,16 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="icon" type="image/png" sizes="32x32" href="content/logo.png">
     <title>PixRei</title>
     <meta property="og:type" content="website">
     <meta property="og:title" content="Pixrei - Security Blog & Portfolio">
     <meta property="og:description" content="Blog posts on penetration testing, CTF writeups and security research">
     <meta property="og:image" content="https://pixrei.xyz/content/blog-preview.jpg">
 
-<!-- Blog structured data -->
- <script type="application/ld+json">
+    <!-- Blog structured data -->
+    <script type="application/ld+json">
     {
         "@context": "https://schema.org",
         "@type": "Blog",
@@ -27,23 +25,22 @@
             "url": "https://pixrei.xyz"
         }
     }
-    
-</script>
-
-    
+    </script>
 </head>
 <body>
     <div class="welcome" id="welcome">
         <h1>Welcome</h1>
     </div>  
+    
     <nav id="navbar">
-    <ul>
-        <li id="home"><a href="#hero-section">Home</a></li>
-        <li id="news"><a href="#boxes">About</a></li>
-        <li id="inform"><a href="#blog-section">Blog <span class="new-badge">NEW</span></a></li>
-        <li><a href="#last-section">Contact</a></li>
-    </ul>
-</nav>
+        <ul>
+            <li id="home"><a href="#hero-section">Home</a></li>
+            <li id="news"><a href="#boxes">About</a></li>
+            <li id="inform"><a href="#blog-section">Blog <span class="new-badge">NEW</span></a></li>
+            <li><a href="#last-section">Contact</a></li>
+        </ul>
+    </nav>
+    
     <section id="hero-section" class="hero-section">
         <div class="hero-background">
             <div class="floating-shapes">
@@ -100,159 +97,178 @@
     <section id="main">
         <div class="header-center">
             <h3>
-                
                 Meet The Developer
                 <h2>My Journey in Cybersecurity</h2>
             </h3>
         </div>
-        <section id="boxes">
-            <div class="box" id="box-1">
-                <div class="box-inner">
-                    <img class="box-img" src="content/programmer.jpeg" alt="Programmer">
-                    <div class="box-overlay">
-                        <div class="box-content">
-                            <h1 class="box-title"><i>Hey There,
-                                I'm Ahmet</i></h2>
-                            <p class="box-subtitle">I'm a Software Engineer</p>
-                            <p class="box-subtitle">and Red Team Rookie</p>
+        
+        <!-- Updated Expertise Showcase Section -->
+        <section id="boxes" class="expertise-showcase">
+            <div class="expertise-card" data-skill="security">
+                <div class="card-header">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Cybersecurity</h3>
+                </div>
+                <div class="card-content">
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-width="85%">
+                            <span class="re">Penetration Testing</span>
+                            <!---<span>-</span>--->
+                        </div>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-width="80%">
+                            <span class="re">Web App Security</span>
+                            <!---<span>%</span>--->
+                        </div>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-width="75%">
+                            <span class="re">Malware Analysis</span>
+                            <!---<span>%</span>--->
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="box" id="box-2">
-                <div class="box-inner">
-                    <img class="box-img" src="content/astronaut.jpeg" alt="Astronaut">
-                    <div class="box-overlay">
-                        <div class="box-content">
-                            <a href="https://xmind.ai/share/hyWpPx5o?xid=RdRDQcNG" class="box-icon">
-                                <i class="fa-solid fa-book"></i>
-                            </a>
-                            <p class="box-subtitle">My Xmind Notes</p>
-                            <p class="box-subtitle">for this road</p>
-                        </div>
+            <div class="expertise-card" data-skill="development">
+                <div class="card-header">
+                    <i class="fas fa-code"></i>
+                    <h3>Software Development -WIP</h3>
+                </div>
+                <div class="card-content">
+                    <div class="tech-stack">
+                        <span class="tech-tag">Python</span>
+                        <span class="tech-tag">JavaScript</span>
+                        <span class="tech-tag">C++</span>
+                        <span class="tech-tag">SQL</span>
+                        <span class="tech-tag">Linux</span>
                     </div>
+                    <a href="https://github.com/Ahmet-Sumer" class="card-link" target="_blank">
+                        <i class="fab fa-github"></i>
+                        <span>View Projects</span>
+                    </a>
                 </div>
             </div>
 
-            <div class="box" id="box-3">
-                <div class="box-inner">
-                    <img class="box-img" src="content/download.jpeg" alt="Projects">
-                    <div class="box-overlay">
-                        <div class="box-content">
-                            <h3 class="box-title"> <a href="https://github.com/ahmet-sumer" target="_blank"><i class="fas fa-code"></i></a>
-                            </h3>
-                            
-                            <p class="box-subtitle">Projects</p>
-                            <p class="box-subtitle"><i>WIP</i></p>
-                        </div>
+            <div class="expertise-card" data-skill="learning">
+                <div class="card-header">
+                    <i class="fas fa-brain"></i>
+                    <h3>Continuous Learning</h3>
+                </div>
+                <div class="card-content">
+                    <div class="learning-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">20+</span>
+                            <span class="stat-label">CTF Challenges</span>
+                        </div><!--
+                        <div class="stat-item">
+                            <span class="stat-number">2+</span>
+                            <span class="stat-label">Certificates</span>
+                        </div>-->
                     </div>
+                    <a href="https://xmind.ai/share/hyWpPx5o?xid=RdRDQcNG" class="card-link" target="_blank">
+                        <i class="fas fa-pencil"></i>
+                        <span>My Notes</span>
+                    </a>
                 </div>
             </div>
         </section>
-        
-        <!-- Start of Blog Section -->
-<section id="blog-section" class="blog-preview-section">
-    <div class="header-center">
-        <h3>Blog Posts</h3>
-        <h2>Security Research, CTF Writeups & Tutorials</h2>
-        
-    </div>
-        
-        <div class="blog-preview-grid">
-            <!-- Blog Post 1 -->
-            <article class="blog-preview-card">
-                <div class="blog-card-header">
-                    <span class="blog-category">Security</span>
-                    <span class="blog-date">July 14, 2025</span>
-                </div>
-                <h3 class="blog-card-title">
-                    <a href="https://pixrei.xyz/blog/Security/owasp-10.html">
-                        OWASP Top 10: Web Application Security Risks
-                    </a>
-                </h3>
-                <p class="blog-card-excerpt">
-                    We examine in detail the most common security vulnerabilities in modern web applications 
-                    and the measures that can be taken against them...
-                </p>
-                <div class="blog-card-footer">
-                    <div class="blog-tags">
-                        <span class="blog-tag">#OWASP</span>
-                        <span class="blog-tag">#WebSecurity</span>
+
+        <!-- Blog Section -->
+        <section id="blog-section" class="blog-preview-section">
+            <div class="header-center">
+                <h3>Blog Posts</h3>
+                <h2>Security Research, CTF Writeups & Tutorials</h2>
+            </div>
+                
+            <div class="blog-preview-grid">
+                <!-- Blog Post 1 -->
+                <article class="blog-preview-card">
+                    <div class="blog-card-header">
+                        <span class="blog-category">Security</span>
+                        <span class="blog-date">December 15, 2024</span>
                     </div>
-                    <a href="https://pixrei.xyz/blog/Security/owasp-10" class="read-more-link">
-                        Read More <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            </article>
-
-            <!-- Blog Post 2 -->
-            <article class="blog-preview-card">
-                <div class="blog-card-header">
-                    <span class="blog-category">CTF</span>
-                    <span class="blog-date">July 31, 2025</span>
-                </div>
-                <h3 class="blog-card-title">
-                    <a href="https://pixrei.xyz/blog/ctf/outbound.html">
-                        HackTheBox - Outbound Machine Walkthrough
-                    </a>
-                </h3>
-                <p class="blog-card-excerpt">
-                    Complete walkthrough of HTB Outbound machine featuring Roundcube CVE-2025-49113 RCE, 
-                    Triple DES decryption...
-                </p>
-                <div class="blog-card-footer">
-                    <div class="blog-tags">
-                        <span class="blog-tag">#HTB</span>
-                        <span class="blog-tag">#RCE</span>
-                        <span class="blog-tag">#PrivEsc</span>
+                    <h3 class="blog-card-title">
+                        <a href="#">
+                            OWASP Top 10: Web Application Security Risks
+                        </a>
+                    </h3>
+                    <p class="blog-card-excerpt">
+                        We examine in detail the most common security vulnerabilities in modern web applications 
+                        and the measures that can be taken against them...
+                    </p>
+                    <div class="blog-card-footer">
+                        <div class="blog-tags">
+                            <span class="blog-tag">#OWASP</span>
+                            <span class="blog-tag">#WebSecurity</span>
+                        </div>
+                        <a href="https://pixrei.xyz/blog/Security/owasp-10" class="read-more-link">
+                            Read More <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
-                    <a href="https://pixrei.xyz/blog/ctf/outbound.html" class="read-more-link">
-                        Read More <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            </article>
+                </article>
 
-            <!-- Blog Post 3 -->
-            <article class="blog-preview-card">
-                <div class="blog-card-header">
-                    <span class="blog-category">PENTEST</span>
-                    <span class="blog-date">August 3, 2025</span>
-                </div>
-                <h3 class="blog-card-title">
-                    <a href="https://pixrei.xyz/blog/PenTest/pen-methods">
-                        Complete Penetration Testing Methodology
-                    </a>
-                </h3>
-                <p class="blog-card-excerpt">
-                    A comprehensive guide to penetration testing methodology,
-                    from reconnaissance to post-exploitation and reporting...
-                </p>
-                <div class="blog-card-footer">
-                    <div class="blog-tags">
-                        <span class="blog-tag">#PenTest</span>
-                        <span class="blog-tag">#Methodology</span>
-                        <span class="blog-tag">#Security</span>
+                <!-- Blog Post 2 -->
+                <article class="blog-preview-card">
+                    <div class="blog-card-header">
+                        <span class="blog-category">CTF</span>
+                        <span class="blog-date">July 31, 2025</span>
                     </div>
-                    <a href="https://pixrei.xyz/blog/PenTest/pen-methods" class="read-more-link">
-                        Read More <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            </article>
-            
-        </div>
+                    <h3 class="blog-card-title">
+                        <a href="blog/CTF/htb-outbound.html">
+                            HackTheBox - Outbound Machine Walkthrough
+                        </a>
+                    </h3>
+                    <p class="blog-card-excerpt">
+                        Complete walkthrough of HTB Outbound machine featuring Roundcube CVE-2025-49113 RCE, 
+                        Triple DES decryption...
+                    </p>
+                    <div class="blog-card-footer">
+                        <div class="blog-tags">
+                            <span class="blog-tag">#HTB</span>
+                            <span class="blog-tag">#RCE</span>
+                            <span class="blog-tag">#PrivEsc</span>
+                        </div>
+                        <a href="blog/CTF/htb-outbound.html" class="read-more-link">
+                            Read More <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </article>
 
+                <!-- Blog Post 3 -->
+                <article class="blog-preview-card">
+                    <div class="blog-card-header">
+                        <span class="blog-category">Tools</span>
+                        <span class="blog-date">December 5, 2024</span>
+                    </div>
+                    <h3 class="blog-card-title">
+                        <a href="#">
+                            Burp Suite Extensions: Top 10 Most Useful Add-ons
+                        </a>
+                    </h3>
+                    <p class="blog-card-excerpt">
+                        The best Burp Suite extensions that will make your job easier in web application 
+                        penetration testing and usage examples...
+                    </p>
+                    <div class="blog-card-footer">
+                        <div class="blog-tags">
+                            <span class="blog-tag">#BurpSuite</span>
+                            <span class="blog-tag">#Tools</span>
+                        </div>
+                        <a href="#" class="read-more-link">
+                            Read More <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </article>
+            </div>
 
-        <div class="blog-section-footer">
-            <a href="https://pixrei.xyz/blog/index.html" class="view-all-posts">
-                View All Posts <i class="fas fa-external-link-alt"></i>
-            </a>
-        </div>
-        
-    
-</section>
-<!-- End of Blog Section -->
-
+            <div class="blog-section-footer">
+                <a href="https://pixrei.xyz/blog/index.html" class="view-all-posts">
+                    View All Posts <i class="fas fa-external-link-alt"></i>
+                </a>
+            </div>
+        </section>
 
         <div class="header-center">
             <h3>Let's Connect
@@ -260,79 +276,72 @@
             </h3>
         </div>
 
-
-        <!--Start of Last Section (Form & Logos)-->
-<section class="last-section" id="last-section">
-    <div class="contact-content">
-        <div class="form">
-            <h3 class="form-title">Get In Touch</h3>
-            <form action="" method="POST">
-                <div class="form-group">
-                    <input id="email" type="email" placeholder="Your Email Address" autocomplete="email" required>
-                    <div class="error-message">Please enter a valid email address</div>
+        <!-- Contact Section -->
+        <section class="last-section" id="last-section">
+            <div class="contact-content">
+                <div class="form">
+                    <h3 class="form-title">Get In Touch</h3>
+                    <form action="" method="POST">
+                        <div class="form-group">
+                            <input id="email" type="email" placeholder="Your Email Address" autocomplete="email" required>
+                            <div class="error-message">Please enter a valid email address</div>
+                        </div>
+                        <div class="form-group">
+                            <input id="name" type="text" placeholder="Your Full Name" autocomplete="name" required>
+                            <div class="error-message">Please enter your name</div>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="write-box" placeholder="Tell me about your project or just say hello..." rows="6" required></textarea>
+                            <div class="error-message">Please enter your message</div>
+                        </div>
+                        <button type="submit" id="submit" class="submit-button">
+                            Send Message
+                        </button>
+                        <div class="success-message">Thank you! Your message has been sent successfully.</div>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <input id="name" type="text" placeholder="Your Full Name" autocomplete="name" required>
-                    <div class="error-message">Please enter your name</div>
+                
+                <div class="social-section">
+                    <h3 class="social-title">Let's Connect</h3>
+                    <p class="social-subtitle">Follow me on social media or check out my work</p>
+                    <ul id="logos">
+                        <li>
+                            <a href="https://www.linkedin.com/in/ahmet-ege-s%C3%BCmer-9156b7222/" 
+                               target="_blank" 
+                               rel="noopener noreferrer"
+                               aria-label="Visit my LinkedIn profile">
+                                <i class="fa-brands fa-linkedin-in"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.instagram.com/pixrei.xyz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" 
+                               target="_blank" 
+                               rel="noopener noreferrer"
+                               aria-label="Follow me on Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/ahmet-Sumer" target="_blank" 
+                               rel="noopener noreferrer"
+                               aria-label="Check out my GitHub projects">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://pixrei.xyz/blog" 
+                               target="_blank" 
+                               rel="noopener noreferrer"
+                               aria-label="Read my blog">
+                                <i class="fas fa-blog"></i>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
-                <div class="form-group">
-                    <textarea id="write-box" placeholder="Tell me about your project or just say hello..." rows="6" required></textarea>
-                    <div class="error-message">Please enter your message</div>
-                </div>
-                <button type="submit" id="submit" class="submit-button">
-                    Send Message
-                </button>
-                <div class="success-message">Thank you! Your message has been sent successfully.</div>
-            </form>
-        </div>
-        
-        <div class="social-section">
-            <h3 class="social-title">Let's Connect</h3>
-            <p class="social-subtitle">Follow me on social media or check out my work</p>
-            <ul id="logos">
-                <li>
-                    <a href="https://www.linkedin.com/in/ahmet-ege-s%C3%BCmer-9156b7222/" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       aria-label="Visit my LinkedIn profile">
-                        <i class="fa-brands fa-linkedin-in"></i>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.instagram.com/pixrei.xyz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       aria-label="Follow me on Instagram">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://github.com/Ahmet-Sumer" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       aria-label="Check out my GitHub projects">
-                        <i class="fab fa-github"></i>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://pixrei.xyz/blog" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       aria-label="Read my blog">
-                        <i class="fas fa-blog"></i>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</section>
+            </div>
+        </section>
+    </section>
     <script src="first.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
+                
